@@ -16,6 +16,8 @@ namespace CitrixAutoAnalysis.pattern
         private Graph graph;
         private ProductVersion version;
 
+        private string placeholder_for_segmentname;
+
         public Pattern(Guid id, string name, ProductVersion productVersion) : base(id)
         {
             this.patternName = name;
@@ -97,6 +99,11 @@ namespace CitrixAutoAnalysis.pattern
         public string PatternName {
             get { return patternName; }
             set { patternName = value; }
+        }
+        public string PlaceHolder
+        {
+            get { return placeholder_for_segmentname; }
+            set { placeholder_for_segmentname = value; }
         }
     }
 }

@@ -141,7 +141,8 @@ namespace DataBaseHelper
                         "IndexInSegment" == nv.name || 
                         "LineNum" == nv.name || 
                         "IndexInPattern" == nv.name ||
-                        "IsIssued" == nv.name)
+                        "IsIssued" == nv.name ||
+                        "LineNumInTraceFile" == nv.name)
                         myRow[nv.name] = Int32.Parse(nv.value);
                    else if("Time" == nv.name)
                     {

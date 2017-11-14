@@ -19,7 +19,7 @@ namespace CitrixAutoAnalysis.pattern
         private int processId;
         private int threadId;
         private int indexInSeg; // the index of the log in the segment, so we can know the orders
-
+        private int lineNumInTrace;
         private DateTime capturedTime;
 
         private HashSet<Log> equivalents; //  a set of equivalent logs cross different version, they may have different line number, but they are the same
@@ -271,6 +271,16 @@ namespace CitrixAutoAnalysis.pattern
             get { return rwp; }
             set { rwp = value; }
         }
+        
+        public int LineNumInTrace
+        {
+            get { return lineNumInTrace; }
+            set { lineNumInTrace = value; }
+        }
+        public bool IsForDebug
+        { get; set; }
+        public bool IsBreakPoint
+        { get; set; }
     }
     public enum CDFLogMode
     {

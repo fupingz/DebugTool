@@ -86,7 +86,8 @@ namespace CitrixAutoAnalysis.ParsePatern
                 new NameAndValues("ProductName", (pattern.ProductVersion).ProductName),
                 new NameAndValues("Version", pattern.ProductVersion.Version),
                 new NameAndValues("HotfixLevel", pattern.ProductVersion.HotfixLevel),
-                new NameAndValues("IsIssued",isIssued?"1":"0"));
+                new NameAndValues("IsIssued",isIssued?"1":"0")
+                );
                 
 
         }
@@ -131,8 +132,10 @@ namespace CitrixAutoAnalysis.ParsePatern
                 new NameAndValues("ProcessID", log.ProcessId.ToString()),
                 new NameAndValues("ThreadID", log.ThreadId.ToString()),
                 new NameAndValues("RelationWithPrevious", null),// need to refine this
-                new NameAndValues("Text", log.Text)
-                //new NameAndValues("SessionID", log.SessionId.ToString()),
+                new NameAndValues("Text", log.Text),
+                new NameAndValues("LineNumInTraceFile",log.LineNumInTrace.ToString()),
+                new NameAndValues("IsForDebug", log.IsForDebug?"1":"0"),
+                new NameAndValues("IsBreakPoint", log.IsForDebug?"1":"0")
                );
 
         }
@@ -250,6 +253,9 @@ namespace CitrixAutoAnalysis.ParsePatern
                 node.Text = dr["Text"].ToString();
                 node.IndexInSeg = Int32.Parse(dr["IndexInSegment"].ToString());
                 //node.RelationWithPrevious = dr["RelationWithPrevious"];
+                node.LineNumInTrace = Int32.Parse(dr["LineNumInTraceFile"].ToString());
+                node.IsForDebug = (dr["IsForDebug"] as bool?) ?? false;
+                node.IsBreakPoint = (dr["IsBreakPoint"] as bool?) ?? false;
                 List<Context> conts = getContextFromDB(node.NodeId.ToString());
                 node.PatternContext = conts;
                 listNodes.Add(node);

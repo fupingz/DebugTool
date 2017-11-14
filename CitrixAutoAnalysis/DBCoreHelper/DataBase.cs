@@ -37,6 +37,11 @@ namespace DataBaseHelper
         public const string SEGMENTTABLENAME = "SegmentTable";
         public const string LOGTABLENAME = "LogTable";
         public const string CONTEXTTABLENAME = "ContextTable";
+        // dongsheng add 
+        public const string CADTABLENAME = "CadJobs";
+        public const string CADISSUESTABLENAME = "CadIssues";
+        // dongsheng end
+      
         // 连接字符串
         //public const string ConnectionString = "Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;Integrated Security=False;uid=cad_admin;pwd=njlcm@2017";
         //public const string ConnectionString = "Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;Integrated Security=False;MultipleActiveResultSets=True;uid=cad_admin;pwd=njlcm@2017";
@@ -258,7 +263,165 @@ namespace DataBaseHelper
             }
             return listNV;
         }
+       public List<string> GetSimilarIssue(int IssueID)
+        {
+            string cmd = "select *" + " from " + CADISSUESTABLENAME + " where ID = \'" + IssueID + "\'";
+            SqlCommand sqlCmd = new SqlCommand(cmd, conn);
+            string RootCause = "";
+            
+            using (var reader1 = sqlCmd.ExecuteReader())
+            {
+//                if (reader.Read()) RootCause = (string)reader["RootCause"];
+                if (reader1.Read())
+                {
+                    RootCause = reader1.GetString(5);
+//                    Console.Write("reader.GetString is：" + reader1.GetSqlString(5) + "\n");
+                    
+                    
+                }
+            }
+            //
+            string m_StartMenuEnabled             = "true";
+            if (m_StartMenuEnabled == "true")
+            {
+                Console.Write("m_StartMenuEnabled true\n");
+            }
+            else
+            {
+                Console.Write("m_StartMenuEnabled false\n");
+            }
+            //
+            string[] splitRootCauses = RootCause.Split(' ');
+            List<string> LCIDs = new List<string>();
+//            Console.Write("Rootcause string is：" + RootCause.Length + "\n");
+            foreach(var splitRC in splitRootCauses)
+            {
+                if (splitRC.Length != 0)
+                { 
+                   Console.Write("splitRC is not null：" + splitRC + "\n");
+                   string cmd2 = "select *" + " from " + CADISSUESTABLENAME + " where ID <> \'" + IssueID + "\'" + " and RootCause like \'%" + splitRC + "%\'";
+                   SqlCommand sqlCmd2 = new SqlCommand(cmd2, conn);
+                   using (var reader2 = sqlCmd2.ExecuteReader())
+                   {
+                       while (reader2.Read())
+                       {
+                           LCIDs.Add((string)reader2["LCID"]);
+                       }
+                   }
+                }
+            }
 
+
+
+            return LCIDs;
+        }
+        public void GetSimilarIssue2()                                                           
+        {
+            string cmd           = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed = \'0\'";
+            string updatecmd     = "";
+            string RootCause     = "";
+            string resolution    = "";
+            string SimilarLCID   = "";
+            int    ID            = 0;
+            
+            SqlCommand sqlCmd = new SqlCommand(cmd, conn);
+            using (var reader1 = sqlCmd.ExecuteReader())
+            {
+                while (reader1.Read())
+                {
+                    //RootCause = reader1.GetString(5);
+
+                    try
+                    {
+                        RootCause = (string)reader1["RootCause"];
+                    }
+                    catch
+                    {
+                        Console.WriteLine("get RootCause failed" + "\n");
+                        return;
+                    }
+                    //try 
+                    //{
+                    //    resolution = (string)reader1["Resolution"];
+                    //}
+                    //catch
+                    //{
+                    //    Console.WriteLine("get resolution failed" + "\n");
+                    //}
+
+                    ID         = (int)reader1["ID"];
+                    //IssuePro = (string)reader1["IssueProcessed"];
+                    //JobID = (string)reader1["JobID"];
+                    string[] splitRootCauses = RootCause.Split(' ');
+                    foreach (var splitRC in splitRootCauses)
+                    {
+                        if (splitRC.Length == 0)
+                            continue;
+                        //Console.Write("splitRC is not null：" + splitRC + "\n" + "RootCause=" + RootCause+ "Resolution="+ resolution);
+                        //Console.Write("splitRC is not null：" + splitRC + "\n") ;
+                        string cmd2 = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed <> \'0\'" + " and RootCause like \'%" + splitRC + "%\'";
+                        SqlCommand sqlCmd2 = new SqlCommand(cmd2, conn);
+                        using (var reader2 = sqlCmd2.ExecuteReader())
+                        {
+                            while (reader2.Read())
+                            {
+                                SimilarLCID = (string)reader2["LCID"];
+                                break;
+                            }
+                        }
+                    }
+                    if (0 != SimilarLCID.Length)
+                    {
+                        string[] splitSimilarLCID = SimilarLCID.Split(' ');
+                        foreach (var splitSLCID in splitSimilarLCID)
+                        {
+                            if (splitSLCID.Length == 0)
+                                continue;
+                            //updatecmd = "update " + CADISSUESTABLENAME + " set LCID = \'" + splitSLCID + "\'" + " where JobID = \'" + JobID + "\'";
+                            updatecmd = "update " + CADISSUESTABLENAME + " set LCID = \'" + splitSLCID + "\'" + ",IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                            SqlCommand updatesqlCmd = new SqlCommand(updatecmd, conn);
+                            updatesqlCmd.ExecuteNonQuery();
+                            Console.Write(updatecmd + "\n");
+                        }
+                    }
+                    else
+                    {
+                        updatecmd = "update " + CADISSUESTABLENAME + " set IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                        SqlCommand updatesqlCmd = new SqlCommand(updatecmd, conn);
+                        updatesqlCmd.ExecuteNonQuery();
+                        Console.Write(updatecmd + "\n");
+
+                    }
+
+                }
+            }
+        }
+        public void pTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            //Console.Write("timer elapsed \n");
+            try
+            {
+                GetSimilarIssue2();
+            }
+            catch 
+            {
+                Console.WriteLine("get issue failed" + "\n");
+            }
+            
+            return;
+        }
+        public void StartTimerThread()
+        {
+            //GetSimilarIssue2();
+            System.Timers.Timer pTimer = new System.Timers.Timer(5000);
+            pTimer.Elapsed += pTimer_Elapsed;
+            pTimer.AutoReset = true;
+            pTimer.Enabled = true;
+ 
+            return;
+        }
+
+    }
     }
 
 }

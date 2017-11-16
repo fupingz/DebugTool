@@ -315,12 +315,12 @@ namespace DataBaseHelper
 
             return LCIDs;
         }
-        public void GetSimilarIssue2()                                                           
+                public void GetSimilarIssue2()                                                           
         {
             string cmd           = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed = \'0\'";
             string updatecmd     = "";
-            string RootCause     = "";
-            string resolution    = "";
+            string IntermediateResult = "";
+            //string resolution    = "";
             string SimilarLCID   = "";
             int    ID            = 0;
             
@@ -333,11 +333,12 @@ namespace DataBaseHelper
 
                     try
                     {
-                        RootCause = (string)reader1["RootCause"];
+                        IntermediateResult = (string)reader1["IntermediateResult"];
+                        
                     }
                     catch
                     {
-                        Console.WriteLine("get RootCause failed" + "\n");
+                        Console.WriteLine("get IntermediateResult failed" + "\n");
                         return;
                     }
                     //try 
@@ -352,14 +353,14 @@ namespace DataBaseHelper
                     ID         = (int)reader1["ID"];
                     //IssuePro = (string)reader1["IssueProcessed"];
                     //JobID = (string)reader1["JobID"];
-                    string[] splitRootCauses = RootCause.Split(' ');
-                    foreach (var splitRC in splitRootCauses)
+                    string[] splitIntermediateResult = IntermediateResult.Split(' ');
+                    foreach (var splitIR in splitIntermediateResult)
                     {
-                        if (splitRC.Length == 0)
+                        if (splitIR.Length == 0)
                             continue;
                         //Console.Write("splitRC is not null：" + splitRC + "\n" + "RootCause=" + RootCause+ "Resolution="+ resolution);
                         //Console.Write("splitRC is not null：" + splitRC + "\n") ;
-                        string cmd2 = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed <> \'0\'" + " and RootCause like \'%" + splitRC + "%\'";
+                        string cmd2 = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed <> \'0\'" + " and IntermediateResult like \'%" + splitIR + "%\'";
                         SqlCommand sqlCmd2 = new SqlCommand(cmd2, conn);
                         using (var reader2 = sqlCmd2.ExecuteReader())
                         {

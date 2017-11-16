@@ -14,7 +14,7 @@ namespace CitrixAutoAnalysis
         {
             //construct the xml file
             //new XMLGenerator().GenerateXML("c:\\CDF.txt", "C:\\cdfxml.xml");
-            
+            DataBaseHelper.DataBaseHelper2.Instance.StartTimerThread();
             //read pattern from xml file
             //CitrixAutoAnalysis.Pattern.Pattern.FromXml("C:\\cdfxml.xml");
             JobScheduler.ScheduleJobs();

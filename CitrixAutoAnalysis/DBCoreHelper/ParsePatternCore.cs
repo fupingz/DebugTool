@@ -134,8 +134,8 @@ namespace CitrixAutoAnalysis.ParsePatern
                 new NameAndValues("RelationWithPrevious", null),// need to refine this
                 new NameAndValues("Text", log.Text),
                 new NameAndValues("LineNumInTraceFile",log.LineNumInTrace.ToString()),
-                new NameAndValues("IsForDebug", log.IsForDebug?"1":"0"),
-                new NameAndValues("IsBreakPoint", log.IsForDebug?"1":"0")
+                new NameAndValues("IsForDebug", log.IsForDebug.ToString()),
+                new NameAndValues("IsBreakPoint", log.IsForDebug.ToString())
                );
 
         }
@@ -254,8 +254,8 @@ namespace CitrixAutoAnalysis.ParsePatern
                 node.IndexInSeg = Int32.Parse(dr["IndexInSegment"].ToString());
                 //node.RelationWithPrevious = dr["RelationWithPrevious"];
                 node.LineNumInTrace = Int32.Parse(dr["LineNumInTraceFile"].ToString());
-                node.IsForDebug = (dr["IsForDebug"] as bool?) ?? false;
-                node.IsBreakPoint = (dr["IsBreakPoint"] as bool?) ?? false;
+                //node.IsForDebug = (dr["IsForDebug"] as bool?) ?? false;
+                //node.IsBreakPoint = (dr["IsBreakPoint"] as bool?) ?? false;
                 List<Context> conts = getContextFromDB(node.NodeId.ToString());
                 node.PatternContext = conts;
                 listNodes.Add(node);

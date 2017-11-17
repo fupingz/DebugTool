@@ -116,7 +116,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             List<Pattern> result = FillInPatternInfo(instances);
 
             OutputToPersistance(result);
-
+            UpdateJobInfo(job);
             // here we are processing the result
         }
 
@@ -233,6 +233,17 @@ namespace CitrixAutoAnalysis.analysis.engine
             foreach (Pattern pt in result)
                 PPCore.ParsePattern(pt);
         }
+
+
+        private void UpdateJobInfo(Job job)
+        {
+            string SqlString = "Update CadJobs set AnalyzeStartTime = '" + DateTime.Now.ToString() + "' where id=" + job.JobId;
+
+            using (DBHelper helper = new DBHelper())
+            {
+                helper.UpdateDB(SqlString);
+            }
+        } 
     }
 
 

@@ -90,13 +90,24 @@ namespace DataBaseHelper
                 }
             }
         }
+
+        /// <summary>
+        /// get the db connection status 
+        /// </summary>
+        /// <returns></returns>
+        public Boolean IsDBConnected()
+        {
+            return conn.State == ConnectionState.Open;
+        }
         public Boolean DBOpen()
         {
 
             try
             {
-                // 打开数据库连接 n
-                conn.Open();
+                if (conn.State != ConnectionState.Open)
+                {// 打开数据库连接 n
+                    conn.Open();
+                }
                 // 如果当前连接状态打开，则在控制台上显示输出
                 if (conn.State == ConnectionState.Open)
                 {
@@ -339,7 +350,7 @@ namespace DataBaseHelper
                     catch
                     {
                         Console.WriteLine("get IntermediateResult failed" + "\n");
-                        return;
+                        continue;
                     }
                     //try 
                     //{

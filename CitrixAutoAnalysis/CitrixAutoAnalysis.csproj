@@ -46,6 +46,7 @@
     <Compile Include="analysis\engine\CDFFilter.cs" />
     <Compile Include="analysis\engine\CDFCondition.cs" />
     <Compile Include="analysis\engine\CDFHelper.cs" />
+    <Compile Include="analysis\engine\IssueSummary.cs" />
     <Compile Include="analysis\engine\MileStoneEngine.cs" />
     <Compile Include="analysis\engine\TopDownEngine.cs" />
     <Compile Include="analysis\io\DBHelper.cs" />

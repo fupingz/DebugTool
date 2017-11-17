@@ -49,6 +49,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             using (DBHelper helper = new DBHelper())
             {
                 helper.UpdateDB(sql);
+                Console.WriteLine("============>write Issue into DB finished");
             }
         }
 

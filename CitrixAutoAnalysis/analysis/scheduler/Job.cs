@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CitrixAutoAnalysis.analysis.io;
 using CitrixAutoAnalysis.analysis.tools;
+
 using System.Data;
 
 namespace CitrixAutoAnalysis.analysis.scheduler
@@ -76,7 +77,7 @@ namespace CitrixAutoAnalysis.analysis.scheduler
 
         public static Job GetTheMostUrgentJob()
         {
-            string sql = "Select top 1 * from CadJobs where ParseEndTime is not null and AnalyzeStartTime is null order by ParseEndTime";
+            string sql = "Select top 1 * from CadJobs where statusId = 6 order by ParseEndTime";
             List<Job> jobs = new List<Job>();
             DataTable dt;
 
@@ -92,5 +93,59 @@ namespace CitrixAutoAnalysis.analysis.scheduler
 
             return Job.CreateNewJobViaDatBaseRow(dt.Rows[0]);
         }
+
+        public void UpdateJobStatus(JobStatus status)
+        {
+            string SqlString = "update CadJobs set StatusId = " + (int)status + " where id = " + this.JobId;
+
+            using (DBHelper helper = new DBHelper())
+            {
+                helper.UpdateDB(SqlString);
+            }
+        }
+
+        public void UpdateJobStartInfo()
+        {
+            string SqlString = "update CadJobs set StatusId = " + (int)JobStatus.JOB_STATUS_IN_ANALYZING + ",AnalyzeStartTime = '"+DateTime.Now.ToString()+"' where id = " + this.JobId;
+            
+            using (DBHelper helper = new DBHelper())
+            {
+                helper.UpdateDB(SqlString);
+            }
+        }
+
+        public void UpdateJobFailedInfo()
+        {
+            string SqlString = "update CadJobs set StatusId = " + (int)JobStatus.JOB_STATUS_FAILED + ",AnalyzeEndTime = '" + DateTime.Now.ToString() + "' where id = " + this.JobId;
+
+            using (DBHelper helper = new DBHelper())
+            {
+                helper.UpdateDB(SqlString);
+            }
+        }
+
+        public void UpdateJobFinishInfo()
+        {
+            string SqlString = "update CadJobs set StatusId = " + (int)JobStatus.JOB_STATUS_FINISHED + ",AnalyzeEndTime = '" + DateTime.Now.ToString() + "' where id = " + this.JobId;
+
+            using (DBHelper helper = new DBHelper())
+            {
+                helper.UpdateDB(SqlString);
+            }
+        }
+
+    }
+
+    enum JobStatus {
+        JOB_STATUS_UNKNOWN,
+        JOB_STATUS_DRAFT,
+        JOB_STATUS_SUBMITTED,
+        JOB_STATUS_IN_PREPARATION,
+        JOB_STATUS_READY_FOR_PARSING,
+        JOB_STATUS_IN_PARSING,
+        JOB_STATUS_READY_FOR_ANALYZING,
+        JOB_STATUS_IN_ANALYZING,
+        JOB_STATUS_FINISHED,
+        JOB_STATUS_FAILED
     }
 }

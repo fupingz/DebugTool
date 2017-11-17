@@ -24,7 +24,7 @@ namespace CitrixAutoAnalysis.ParsePatern
 
         public void ParsePattern(Object pattern, bool isIssued = false)
         {
-            Trace.WriteLine("ParsePattern start to tracing...");
+            Console.WriteLine("ParsePattern start to tracing...");
             if(!dbHelper.DBOpen())
             {
                 Trace.TraceError("cannot connect to Database！");
@@ -33,12 +33,12 @@ namespace CitrixAutoAnalysis.ParsePatern
             
             // begin  to parse pattern
             Pattern patternc = (Pattern)pattern;
-            Trace.WriteLine("begin to write pattern into the DB");
+            Console.WriteLine("begin to write pattern into the DB");
             writePatternIntoDB(patternc, patternc.PatternName, isIssued);
             List<Segment> listSeg = patternc.Graph.Segments;
             List<List<Log>> nodeList = new List<List<Log>>();
 
-            Trace.WriteLine("begin to write the segment into DB");
+            Console.WriteLine("begin to write the segment into DB");
             ProcessSegList(listSeg, patternc.Graph.NodeId.ToString());
             dbHelper.DBClose();
 

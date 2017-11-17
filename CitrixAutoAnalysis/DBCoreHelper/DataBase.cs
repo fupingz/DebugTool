@@ -44,8 +44,8 @@ namespace DataBaseHelper
       
         // 连接字符串
         //public const string ConnectionString = "Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;Integrated Security=False;uid=cad_admin;pwd=njlcm@2017";
-        //public const string ConnectionString = "Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;Integrated Security=False;MultipleActiveResultSets=True;uid=cad_admin;pwd=njlcm@2017";
-        public const string ConnectionString = "Data Source=DUKE-PC\\SQLEXPRESS;Initial Catalog=ParsePattern;Integrated Security=False;uid=sa;pwd=7ujm*IK<";
+        public const string ConnectionString = "Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;Integrated Security=False;MultipleActiveResultSets=True;uid=cad_admin;pwd=njlcm@2017";
+        //public const string ConnectionString = "Data Source=DUKE-PC\\SQLEXPRESS;Initial Catalog=ParsePattern;Integrated Security=False;uid=sa;pwd=7ujm*IK<";
         /// <summary>
         /// instance of the helper
         /// </summary>
@@ -130,8 +130,8 @@ namespace DataBaseHelper
         {
             SqlDataAdapter myDataAdapter = new SqlDataAdapter("select * from " + table, conn);
             DataSet myDataSet = new DataSet();
-           // try
-           // {
+            try
+            {
                 myDataAdapter.Fill(myDataSet, table);
                 DataTable myTable = myDataSet.Tables[table];
 
@@ -162,20 +162,20 @@ namespace DataBaseHelper
                 // 将DataSet的修改提交至“数据库”
                 SqlCommandBuilder mySqlCommandBuilder = new SqlCommandBuilder(myDataAdapter);
                 myDataAdapter.Update(myDataSet, table);
-           // }
-            //catch
-            //{
-            //    //Console.WriteLine("addline failed" + "\n");
-            //    Console.WriteLine(String.Format("Add new line into {0} failed ", table));
-            //    foreach (NameAndValues nv in rowNameandValues)
-            //        Console.WriteLine(String.Format("The parameters is {0}",nv.ToString()));
-            //    Trace.WriteLine(String.Format("Add new line into {0} failed ",table));
-            //    foreach (NameAndValues nv in rowNameandValues)
-            //        Trace.WriteLine(String.Format("The parameters is {0}", nv.ToString()));
-            //    myDataSet.Dispose();        // 释放DataSet对象
-            //    myDataAdapter.Dispose();    // 释放SqlDataAdapter对象
-            //    return;
-            //}
+            }
+            catch
+            {
+                //Console.WriteLine("addline failed" + "\n");
+                Console.WriteLine(String.Format("Add new line into {0} failed ", table));
+                foreach (NameAndValues nv in rowNameandValues)
+                    Console.WriteLine(String.Format("The parameters is {0}",nv.ToString()));
+                Trace.WriteLine(String.Format("Add new line into {0} failed ",table));
+                foreach (NameAndValues nv in rowNameandValues)
+                    Trace.WriteLine(String.Format("The parameters is {0}", nv.ToString()));
+                myDataSet.Dispose();        // 释放DataSet对象
+                myDataAdapter.Dispose();    // 释放SqlDataAdapter对象
+                return;
+            }
             myDataSet.Dispose();        // 释放DataSet对象
             myDataAdapter.Dispose();    // 释放SqlDataAdapter对象
         }
@@ -399,7 +399,7 @@ namespace DataBaseHelper
         }
         public void pTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            //Console.Write("timer elapsed \n");
+            Console.Write("timer elapsed \n");
             try
             {
                 GetSimilarIssue2();
@@ -425,4 +425,3 @@ namespace DataBaseHelper
     }
     }
 
-}

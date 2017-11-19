@@ -6,8 +6,6 @@ using System.Threading.Tasks;
 
 using CitrixAutoAnalysis.pattern;
 
-using CitrixAutoAnalysis.ParsePatern;
-
 namespace CitrixAutoAnalysis.analysis.engine
 {
     class CDFFilter
@@ -42,6 +40,8 @@ namespace CitrixAutoAnalysis.analysis.engine
                     return MatchCDFText(log.Text);
                 case CDFCondition.CDF_FILTER:
                     return MatchFilter(log);
+                case CDFCondition.CDF_ERROR_EXCEPTION:
+                    return MatchErrOrExcep(log);
             }
 
             return false;
@@ -94,6 +94,13 @@ namespace CitrixAutoAnalysis.analysis.engine
             }
 
             return false;
+        }
+
+        private bool MatchErrOrExcep(Log log)
+        {
+            string temp = log.Text.ToUpper();
+
+            return temp.Contains("ERROR") || temp.Contains("EXCEPTION");
         }
     }
 }

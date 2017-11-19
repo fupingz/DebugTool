@@ -16,6 +16,7 @@ namespace CitrixAutoAnalysis.analysis.engine
         CDF_PROCESSID,
         CDF_THREADID,
         CDF_TEXT,
-        CDF_FILTER// to use the contexttype.contextfilter to filter out logs
+        CDF_FILTER,// to use the contexttype.contextfilter to filter out logs
+        CDF_ERROR_EXCEPTION//find the item that has "error" or "exception" in the text
     }
 }

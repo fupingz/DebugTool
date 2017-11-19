@@ -10,8 +10,6 @@ using CitrixAutoAnalysis.analysis.tools;
 
 using CitrixAutoAnalysis.analysis.scheduler;
 
-using CitrixAutoAnalysis.ParsePatern;
-
 namespace CitrixAutoAnalysis.analysis.engine
 {
     class CDFHelper
@@ -33,21 +31,45 @@ namespace CitrixAutoAnalysis.analysis.engine
         {
             this.pattern = FindProperPattern("","",""/*job.ProdId, job.VersionId, job.hotfix*/);
             this.allLog = ReadLogByPattern();
+
+            if (allLog == null)
+            {
+                range = null;
+                return;
+            }
             range = new CDFRange(0, allLog.Count - 1);
         }
 
         private Pattern FindProperPattern(string Product, string Version, string hotfix)
         {
             //here we need to find the proper patterns per the input params.
-            return (Pattern)Pattern.FromXml(@"C:\Users\xiaosongko\Desktop\CitrixAutoAnalysis 11-10-2017\cdfxml.xml");
+            string path = Environment.CurrentDirectory;
+            path = path.Substring(0, path.IndexOf("CitrixAutoAnalysis")) + "CitrixAutoAnalysis\\CitrixAutoAnalysis\\pattern\\patterns\\cdfxml.xml";
+            return (Pattern)Pattern.FromXml(path);
         }
+        private string ReadLogTableNameByJobId(uint jobId)
+        {
+            string sql = "select ResultTable from RawTraceFiles where JobID = "+ jobId;
+            string logTableName = "";
+            using (DBHelper helper = new DBHelper())
+            { 
+                logTableName = helper.RetriveStringFromDB(sql);
+            }
+            return logTableName;
 
+        }
         private List<Log> ReadLogByPattern()
         {
             List<Log> log = new List<Log>();
-            // the database is missing the relation between job and log table, so I'm hard coding here.
-                        //string logTable = job.LogTableName;
-            string sql = "Select * from ParsedCDFTrace_10 where moduleName in (";
+            string logTable = ReadLogTableNameByJobId(job.JobId);
+
+            if (logTable.Length == 0)
+            {
+                //I probably need to elegantly stop processing
+                return null;
+            }
+
+            string sql = "Select * from " + logTable + " where moduleName in (";
             HashSet<string> modules = pattern.GetAllModules();
             int index = 1;
 
@@ -109,15 +131,30 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         public void ProcessJob(Job job)
         {
+            if (this.range == null)
+            { 
+                //log here is something wrong reading the log
+                return;
+            }
             //here a job handling begins.
-            TopDownEngine engine = new TopDownEngine(this, pattern.Graph);
-            List<Graph> instances = engine.ExtractFromCDF();
+            try
+            {
+                job.UpdateJobStartInfo();
 
-            List<Pattern> result = FillInPatternInfo(instances);
+                TopDownEngine engine = new TopDownEngine(this, pattern.Graph);
+                List<Graph> instances = engine.ExtractFromCDF();
 
-            OutputToPersistance(result);
+                List<Pattern> result = FillInPatternInfo(instances);
 
-            // here we are processing the result
+                // here we are processing the result
+                SummarizeAndOutputToPersistance(result);
+            }
+            catch (Exception ex)
+            {
+                job.UpdateJobFailedInfo();
+            }
+
+            job.UpdateJobFinishInfo();
         }
 
         public Log GetNextbyFiltersFromIndex(HashSet<CDFFilter> filters, int index)
@@ -224,6 +261,29 @@ namespace CitrixAutoAnalysis.analysis.engine
             }
 
             return patterns; 
+        }
+
+        private void SummarizeAndOutputToPersistance(List<Pattern> result)
+        {
+            Summarize(result);
+            OutputToPersistance(result);
+        }
+
+        private void Summarize(List<Pattern> result)
+        {
+            foreach (Pattern ptn in result)
+            {
+                Log logErr = ptn.Log.First(l => l.IsForDebug);
+                Log logBreakPoint = ptn.Log.First(l => l.IsBreakPoint);
+
+                if (logErr == null && logBreakPoint == null)
+                {
+                    //probably there is not anything wrong
+                    continue;
+                }
+
+                new IssueSummary(logBreakPoint, logErr, ptn.NodeId, (int)this.job.JobId,job.LCId, "automated analysis result", null).OutputIssueToDB();
+            }
         }
 
         private void OutputToPersistance(List<Pattern> result)

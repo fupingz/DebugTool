@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Data.Sql;
 using System.Data.SqlClient;
 using System.Data;
+using CitrixAutoAnalysis.analysis.tools;
 
 
 namespace CitrixAutoAnalysis.analysis.io
@@ -48,6 +49,28 @@ namespace CitrixAutoAnalysis.analysis.io
             da.Fill(dt);
 
             return dt;
+        }
+
+        public string RetriveStringFromDB(string SqlString)
+        {
+            SqlCommand cmd = new SqlCommand(SqlString, conn);
+            SqlDataAdapter da = new SqlDataAdapter(cmd);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            if (dt.Rows.Count != 1)
+            {
+                return "";
+            }
+
+            return DBConverter.StringFromDBItem(dt.Rows[0][0]);
+        }
+
+        public bool UpdateDB(string SqlString)
+        {
+            SqlCommand cmd = new SqlCommand(SqlString, conn);
+
+            return 1 == cmd.ExecuteNonQuery();
         }
     }
 }

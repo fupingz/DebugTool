@@ -38,12 +38,29 @@ namespace CitrixAutoAnalysis.analysis.engine
             Segment segInstance = new Segment(Guid.NewGuid(), segment.Name, segment.IndexInPattern, null);
             List<Log> segLogs = segment.Log.OrderBy(i => i.IndexInSeg).ToList();
             int temp = helper.GetLogIndex(log);// points to the log that's being processed for the segment
+            bool QuitingDueToErrOrExcep = false;
 
             /*ignore the 1st since it has defintiely matched with the parameter log*/
             for (int index = 0; index < segLogs.Count; index++)
             { 
                 //try to match each log
+                if (temp == -1)
+                {
+                    break;
+                }
+
                 Log curLog = helper.GetLogByIndex(temp);
+
+                curLog.IndexInSeg = segLogs[index].IndexInSeg;
+                curLog.ExtractContextViaPattern(segLogs[index]);//extract all the configured context
+                segInstance.AddLog(curLog);
+                curLog.PatternContext.ForEach(con => segInstance.AddContext(con));
+
+                if (QuitingDueToErrOrExcep)
+                {
+                    curLog.IsForDebug = true;
+                    break;
+                }
 
                 if (index < segLogs.Count - 1)// the last item don't need to find the next
                 {
@@ -60,18 +77,26 @@ namespace CitrixAutoAnalysis.analysis.engine
                     //we want to use the "filters" to get the exact item we need, because some item may be decided in runtime.
                     segLogs[index + 1].PatternContext.Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Value)));
 
-                    temp = helper.GetLogIndexByFiltersFromIndex(filters, temp);
-                }
+                    var tempIndex = helper.GetLogIndexByFiltersFromIndex(filters, temp);
 
-                if (temp == -1)
-                {
-                    return segInstance;// we may still need to do some further things
-                }
+                    if (tempIndex == -1)
+                    {
+                        //return segInstance;// we may still need to do some further things
 
-                curLog.IndexInSeg = segLogs[index].IndexInSeg;
-                curLog.ExtractContextViaPattern(segLogs[index]);//extract all the configured context
-                segInstance.AddLog(curLog);
-                curLog.PatternContext.ForEach(con => segInstance.AddContext(con));
+                        //something bad happens, for now we just define this as an error,
+                        //we need to be more robust in future realizing that missing one item does not necessarily mean something wrong((because CDFControl sometimes loses items)
+
+                        HashSet<CDFFilter> errFilters = new HashSet<CDFFilter>();
+                        errFilters.Add(new CDFFilter(CDFCondition.CDF_ERROR_EXCEPTION, ""));
+                        errFilters.Add(new CDFFilter(CDFCondition.CDF_PROCESSID, curLog.ProcessId.ToString()));//we let it to be in the same process
+
+                        tempIndex = helper.GetLogIndexByFiltersFromIndex(errFilters, temp);
+                        QuitingDueToErrOrExcep = true;
+                    }
+
+                    temp = tempIndex;
+                    
+                }
             }
 
             segInstance.IndexInPattern = segment.IndexInPattern;
@@ -130,11 +155,6 @@ namespace CitrixAutoAnalysis.analysis.engine
             }
 
             return new CDFFilter(condition, value);
-        }
-
-        public void SummarizeIssues()
-        {
-            //summary the issues and store data into DB
         }
     }
 }

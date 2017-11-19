@@ -37,6 +37,8 @@ namespace CitrixAutoAnalysis.pattern
 
         private static string ParamMagic = @"*#_PARAM_INDEX_";
 
+        public Log() { }
+
         public Log(string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime) {
             this.module = Module;
             this.src    = Src;
@@ -217,37 +219,45 @@ namespace CitrixAutoAnalysis.pattern
 
         public string Src {
             get { return src; }
+            set { src = value; }
         }
 
         public string Func { 
             get{ return func; }
+            set { func = value; }
         }
 
         public int Line {
             get { return line; }
+            set { line = value; }
         }
 
         public string Text {
             get { return text; }
+            set { text = value; }
         }
 
         public int SessionId
         {
             get { return sessionId; }
+            set { sessionId = value; }
         }
 
         public int ProcessId
         {
             get { return processId; }
+            set { processId = value; }
         }
 
         public int ThreadId
         {
             get { return threadId; }
+            set { threadId = value; }
         }
 
         public DateTime CapturedTime {
             get { return capturedTime; }
+            set { capturedTime = value; }
         }
 
         // we are reusing this property,

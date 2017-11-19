@@ -16,6 +16,9 @@ namespace CitrixAutoAnalysis.pattern
         private Guid id;
         private Guid logId;
 
+
+        public Context() { }
+
         public Context(Guid conId, string conName, string conVal, int ParamIndex, Guid LogId, ContextType ConType)
         {
             this.id = conId;
@@ -37,6 +40,7 @@ namespace CitrixAutoAnalysis.pattern
 
         public Guid Id {
             get { return this.id; }
+            set { id = value; }
         }
 
         public int Index {
@@ -47,6 +51,7 @@ namespace CitrixAutoAnalysis.pattern
         public string Name 
         {
             get { return name; }
+            set { name = value; }
         }
 
         public string Value

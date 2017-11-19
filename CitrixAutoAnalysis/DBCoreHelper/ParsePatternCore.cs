@@ -214,7 +214,7 @@ namespace CitrixAutoAnalysis.ParsePatern
                 if (row["ID"] != DBNull.Value)
                     segNode.NodeId = new Guid(row["ID"].ToString());
                 if (row["Name"] != DBNull.Value)
-                    segNode.SegName = row["Name"].ToString();
+                    segNode.Name = row["Name"].ToString();
                 //if (row["ParentID"] != DBNull.Value)
                 //    segNode.NodeId = new Guid(row["ID"].ToString());
                 //if (row["ID"] != DBNull.Value)

@@ -10,6 +10,8 @@ using CitrixAutoAnalysis.analysis.tools;
 
 using CitrixAutoAnalysis.analysis.scheduler;
 
+using CitrixAutoAnalysis.ParsePatern;
+
 namespace CitrixAutoAnalysis.analysis.engine
 {
     class CDFHelper

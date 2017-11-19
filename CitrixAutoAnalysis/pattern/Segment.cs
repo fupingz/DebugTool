@@ -40,6 +40,7 @@ namespace CitrixAutoAnalysis.pattern
 
         public HashSet<Log> Log {
             get { return log; }
+            set { log = value; }
         }
 
         public override string ToXml() {
@@ -103,6 +104,12 @@ namespace CitrixAutoAnalysis.pattern
         public int IndexInPattern {
             get { return indexInPattern; }
             set { indexInPattern = value; }
+        }
+
+        public List<Segment> SubSegment
+        {
+            get;
+            set;
         }
     }
 

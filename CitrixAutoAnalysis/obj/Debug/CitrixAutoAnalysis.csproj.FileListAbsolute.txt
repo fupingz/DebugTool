@@ -16,3 +16,6 @@ C:\Users\xiaosongko\Desktop\CitrixAutoAnalysis 11-10-2017\CitrixAutoAnalysis\obj
 C:\Users\xiaosongko\Desktop\CitrixAutoAnalysis 11-10-2017\CitrixAutoAnalysis\bin\Debug\CitrixAutoAnalysis.exe
 C:\Users\xiaosongko\Desktop\CitrixAutoAnalysis 11-10-2017\CitrixAutoAnalysis\bin\Debug\CitrixAutoAnalysis.pdb
 C:\Users\xiaosongko\Desktop\CitrixAutoAnalysis 11-10-2017\CitrixAutoAnalysis\obj\Debug\CitrixAutoAnalysis.csprojResolveAssemblyReference.cache
+C:\Github\DebugTool\CitrixAutoAnalysis\bin\Debug\CitrixAutoAnalysis.exe.config
+C:\Github\DebugTool\CitrixAutoAnalysis\obj\Debug\CitrixAutoAnalysis.exe
+C:\Github\DebugTool\CitrixAutoAnalysis\obj\Debug\CitrixAutoAnalysis.pdb

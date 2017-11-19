@@ -159,20 +159,20 @@ namespace CitrixAutoAnalysis.ParsePatern
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Pattern ParsePatternFromDB(string name, string id =null)
-        {
-            if (!dbHelper.DBOpen())
-            {
-                Trace.TraceError("cannot connect to Database！");
-                return null;
-            }
-            //PatternGraph pG = new PatternGraph(null,null);
-            Pattern pattern = new Pattern(Guid.Empty, null, null);
-            getPatternParams(pattern, name, id);
-            List<Segment> segs = getSegmentFromDB(pattern.Graph.NodeId.ToString());
-            pattern.Graph.Segments = segs;
-            return pattern;
-        }
+        //public Pattern ParsePatternFromDB(string name, string id =null)
+        //{
+        //    if (!dbHelper.DBOpen())
+        //    {
+        //        Trace.TraceError("cannot connect to Database！");
+        //        return null;
+        //    }
+        //    //PatternGraph pG = new PatternGraph(null,null);
+        //    Pattern pattern = new Pattern(Guid.Empty, null, null);
+        //    getPatternParams(pattern, name, id);
+        //    List<Segment> segs = getSegmentFromDB(pattern.Graph.NodeId.ToString());
+        //    pattern.Graph.Segments = segs;
+        //    return pattern;
+        //}
         private void getPatternParams(Pattern pg, string name,string id =null)
         {
             List<NameAndValues> listNv = dbHelper.getTableItemsbyNameOrId(DataBaseHelper.DataBaseHelper2.PATTERNTABLENAME,name,id);

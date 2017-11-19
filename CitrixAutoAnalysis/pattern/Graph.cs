@@ -8,7 +8,7 @@ using System.Xml.Linq;
 
 namespace CitrixAutoAnalysis.pattern
 {
-   public class Graph: AbstractNode
+    class Graph: AbstractNode
     {
         private List<Segment> segments = new List<Segment>();
         private HashSet<Log> log = new HashSet<Log>();

@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace CitrixAutoAnalysis.pattern
 {
-   public class Pattern : AbstractNode
+    class Pattern : AbstractNode
     {
         private static string XMLHeader = @"<?xml version='1.0' encoding='utf-8' ?><pattern>";
         private HashSet<Log> log = new HashSet<Log>();

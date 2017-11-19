@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 namespace CitrixAutoAnalysis.pattern
 {
-    public class Log : AbstractNode
+    class Log : AbstractNode
     {
         private string module;
         private string src;
@@ -26,10 +26,17 @@ namespace CitrixAutoAnalysis.pattern
 
         private RelationWithPrevious rwp;
 
+        //in the segment, we may provide another completely different log item in the place where an expected log should locate,
+        //this is used for the situation that falls back to error finding, when the expected item cannot be found
+        //e.g. when we are trying to find the item "this_is_the_end_of_app_startup", if we don't find it, we find another most relevant error "application_startup_failed",
+        //to fill in the same location where above expected log should be, all later issue summarization will be based on this.
+        private bool isForDebug = false;
+
+        //mark the log item as the location that most close to break
+        private bool isBreakPoint = false;
+
         private static string ParamMagic = @"*#_PARAM_INDEX_";
 
-        public Log()
-        { }
         public Log(string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime) {
             this.module = Module;
             this.src    = Src;
@@ -204,58 +211,43 @@ namespace CitrixAutoAnalysis.pattern
             }
         }
 
-        public string Module
-        {
+        public string Module {
             get { return module; }
-            set { this.module = value; }
         }
 
-        public string Src
-        {
+        public string Src {
             get { return src; }
-            set { this.src = value; }
         }
 
-        public string Func
-        {
-            get { return func; }
-            set { this.func = value; }
+        public string Func { 
+            get{ return func; }
         }
 
-        public int Line
-        {
+        public int Line {
             get { return line; }
-            set { this.line = value; }
         }
 
-        public string Text
-        {
+        public string Text {
             get { return text; }
-            set { this.text = value; }
         }
 
         public int SessionId
         {
             get { return sessionId; }
-            set { this.sessionId = value; }
         }
 
         public int ProcessId
         {
             get { return processId; }
-            set { this.processId = value; }
         }
 
         public int ThreadId
         {
             get { return threadId; }
-            set { this.threadId = value; }
         }
 
-        public DateTime CapturedTime
-        {
+        public DateTime CapturedTime {
             get { return capturedTime; }
-            set { this.capturedTime = value; }
         }
 
         // we are reusing this property,
@@ -270,6 +262,18 @@ namespace CitrixAutoAnalysis.pattern
         public RelationWithPrevious RWP {
             get { return rwp; }
             set { rwp = value; }
+        }
+        public bool IsForDebug
+        {
+            get { return isForDebug; }
+            set { isForDebug = value; }
+        }
+
+        public bool IsBreakPoint
+        {
+            get { return isBreakPoint; }
+            set { isBreakPoint = value; }
+        
         }
     }
     public enum CDFLogMode

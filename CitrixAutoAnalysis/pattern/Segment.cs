@@ -7,7 +7,7 @@ using System.Xml.Linq;
 
 namespace CitrixAutoAnalysis.pattern
 {
-    public class Segment : AbstractNode
+    class Segment : AbstractNode
     {
         private Dictionary<Segment, SegmentRelation> connectedSegments = new Dictionary<Segment,SegmentRelation>();
         private HashSet<Log> log = new HashSet<Log>();
@@ -15,7 +15,6 @@ namespace CitrixAutoAnalysis.pattern
         private string segName;
         private int indexInPattern;
 
-        private List<Segment> subSegment = new List<Segment>();
         public Segment(Guid SegId, string SegName, int index, Graph parent)
             : base(SegId)
         {
@@ -41,7 +40,6 @@ namespace CitrixAutoAnalysis.pattern
 
         public HashSet<Log> Log {
             get { return log; }
-            set { this.log = value; }
         }
 
         public override string ToXml() {
@@ -105,18 +103,6 @@ namespace CitrixAutoAnalysis.pattern
         public int IndexInPattern {
             get { return indexInPattern; }
             set { indexInPattern = value; }
-        }
-
-        //added by xiaosong
-        public List<Segment> SubSegment
-        {
-            get { return this.subSegment; }
-            set { this.subSegment = value; }
-        }
-        public string SegName
-        {
-            get { return this.segName; }
-            set { this.segName = value; }
         }
     }
 

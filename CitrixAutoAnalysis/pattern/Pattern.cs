@@ -24,19 +24,30 @@ namespace CitrixAutoAnalysis.pattern
 
         public static AbstractNode FromXml(string xmlPath) 
         {
-            XElement doc = XElement.Load(xmlPath);
 
-            string PatternId = doc.Descendants("id").First().Value;
-            string PatternName = doc.Descendants("name").First().Value;
-            string ProductName = doc.Descendants("productName").First().Value;
-            string ProductVersion = doc.Descendants("productVersion").First().Value;
-            string HotfixLevel = doc.Descendants("hotfixLevel").First().Value;
 
-            Pattern ptn = new Pattern(Guid.Parse(PatternId), PatternName, new ProductVersion(ProductName, ProductVersion, HotfixLevel));
+            try {
+                XElement doc = XElement.Load(xmlPath);
 
-            ptn.graph = (Graph)Graph.FromXml(ptn, doc.Descendants("graph").First());//leave the graph node to Graph class to handle
+                string PatternId = doc.Descendants("id").First().Value;
+                string PatternName = doc.Descendants("name").First().Value;
+                string ProductName = doc.Descendants("productName").First().Value;
+                string ProductVersion = doc.Descendants("productVersion").First().Value;
+                string HotfixLevel = doc.Descendants("hotfixLevel").First().Value;
 
-            return ptn;
+                Pattern ptn = new Pattern(Guid.Parse(PatternId), PatternName, new ProductVersion(ProductName, ProductVersion, HotfixLevel));
+
+                ptn.graph = (Graph)Graph.FromXml(ptn, doc.Descendants("graph").First());//leave the graph node to Graph class to handle
+
+                
+                return ptn;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("failed to read the pattern : "+ex.ToString());
+            }
+
+            return null;
         }
 
         public override string ToXml()

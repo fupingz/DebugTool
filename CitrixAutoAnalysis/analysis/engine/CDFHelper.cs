@@ -32,6 +32,13 @@ namespace CitrixAutoAnalysis.analysis.engine
         private void Initialize() 
         {
             this.pattern = FindProperPattern("","",""/*job.ProdId, job.VersionId, job.hotfix*/);
+
+            if (pattern == null)
+            {
+                this.allLog = null;
+                this.range = null;
+                return;
+            }
             this.allLog = ReadLogByPattern();
 
             if (allLog == null)
@@ -45,8 +52,11 @@ namespace CitrixAutoAnalysis.analysis.engine
         private Pattern FindProperPattern(string Product, string Version, string hotfix)
         {
             //here we need to find the proper patterns per the input params.
-            string path = Environment.CurrentDirectory;
-            path = path.Substring(0, path.IndexOf("CitrixAutoAnalysis")) + "CitrixAutoAnalysis\\CitrixAutoAnalysis\\pattern\\patterns\\cdfxml.xml";
+            string path = Environment.CurrentDirectory+"\\cdfxml.xml";
+            if (!System.IO.File.Exists(path))
+            {
+                path = path.Substring(0, path.IndexOf("CitrixAutoAnalysis")) + "CitrixAutoAnalysis\\pattern\\patterns\\cdfxml.xml";
+            }
             return (Pattern)Pattern.FromXml(path);
         }
         private string ReadLogTableNameByJobId(uint jobId)
@@ -133,30 +143,26 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         public void ProcessJob(Job job)
         {
+            //here a job handling begins.
             if (this.range == null)
-            { 
+            {
                 //log here is something wrong reading the log
+                Console.WriteLine("Job(id="+job.JobId+") ： the uploaded log does not contain any useful data for debugging, so returning");
                 return;
             }
-            //here a job handling begins.
-            try
-            {
-                job.UpdateJobStartInfo();
 
-                TopDownEngine engine = new TopDownEngine(this, pattern.Graph);
-                List<Graph> instances = engine.ExtractFromCDF();
+            TopDownEngine engine = new TopDownEngine(this, pattern.Graph);
+            List<Graph> instances = engine.ExtractFromCDF();
 
-                List<Pattern> result = FillInPatternInfo(instances);
+            Console.WriteLine("Job(id="+job.JobId+") ：instances(num = "+instances.Count+") were extracted");
+            List<Pattern> result = FillInPatternInfo(instances);
 
-                // here we are processing the result
-                SummarizeAndOutputToPersistance(result);
-            }
-            catch (Exception ex)
-            {
-                job.UpdateJobFailedInfo();
-            }
+            // here we are processing the result
 
-            job.UpdateJobFinishInfo();
+            Console.WriteLine("Job(id=" + job.JobId + ") ：patterns(num = " + result.Count + ") were extracted");
+            SummarizeAndOutputToPersistance(result);
+
+            Console.WriteLine("Job(id=" + job.JobId + ") ：processsing done");
         }
 
         public Log GetNextbyFiltersFromIndex(HashSet<CDFFilter> filters, int index)

@@ -71,6 +71,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="pattern\patterns\cdfxml.xml" />
     <Content Include="pattern\patterns\pattern_server_os_connection.xml" />
   </ItemGroup>
   <ItemGroup />

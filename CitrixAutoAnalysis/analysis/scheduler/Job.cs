@@ -52,7 +52,7 @@ namespace CitrixAutoAnalysis.analysis.scheduler
 
         public static List<Job> GetUnprocessJobs()
         {
-            string sql = "Select * from CadJobs where ParseEndTime is not null and AnalyzeStartTime is null";
+            string sql = "Select * from CadJobs where statusId = " + JobStatus.JOB_STATUS_READY_FOR_ANSLYSIS;
             List<Job> jobs = new List<Job>();
             DataTable dt;
 
@@ -143,6 +143,7 @@ namespace CitrixAutoAnalysis.analysis.scheduler
         JOB_STATUS_IN_PREPARATION,
         JOB_STATUS_READY_FOR_PARSING,
         JOB_STATUS_IN_PARSING,
+        JOB_STATUS_READY_FOR_ANSLYSIS,
         JOB_STATUS_IN_ANALYZING,
         JOB_STATUS_FINISHED,
         JOB_STATUS_FAILED

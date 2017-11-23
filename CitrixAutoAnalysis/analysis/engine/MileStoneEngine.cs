@@ -19,7 +19,7 @@ namespace CitrixAutoAnalysis.analysis.engine
         }
         public List<AbstractNode> ExtractFromCDF()
         {
-            List<Log> segLogs = segment.Log.OrderBy(i => i.IndexInSeg).ToList();
+            List<Log> segLogs = segment.LogInCurrent().OrderBy(i => i.IndexInParent).ToList();
             List<AbstractNode> nodes = new List<AbstractNode>();
 
             //all the logs that matches the first item in the segment
@@ -35,8 +35,8 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         public AbstractNode ExtractInstanceFromCDF(Log log)
         {
-            Segment segInstance = new Segment(Guid.NewGuid(), segment.Name, segment.IndexInPattern, null);
-            List<Log> segLogs = segment.Log.OrderBy(i => i.IndexInSeg).ToList();
+            Segment segInstance = new Segment(Guid.NewGuid(),null, segment.NodeName, segment.IndexInParent);
+            List<Log> segLogs = segment.LogInCurrent().OrderBy(i => i.IndexInParent).ToList();
             int temp = helper.GetLogIndex(log);// points to the log that's being processed for the segment
             bool QuitingDueToErrOrExcep = false;
 
@@ -51,10 +51,11 @@ namespace CitrixAutoAnalysis.analysis.engine
 
                 Log curLog = helper.GetLogByIndex(temp);
 
-                curLog.IndexInSeg = segLogs[index].IndexInSeg;
+                curLog.IndexInParent = segLogs[index].IndexInParent;
+                curLog.RWP = segLogs[index].RWP;
+                curLog.Parent = segInstance;
                 curLog.ExtractContextViaPattern(segLogs[index]);//extract all the configured context
-                segInstance.AddLog(curLog);
-                curLog.PatternContext.ForEach(con => segInstance.AddContext(con));
+                segInstance.AddChildNode(curLog);
 
                 if (QuitingDueToErrOrExcep)
                 {
@@ -75,13 +76,13 @@ namespace CitrixAutoAnalysis.analysis.engine
                     filters.Add(new CDFFilter(CDFCondition.CDF_TEXT, segLogs[index + 1].Text));
 
                     //we want to use the "filters" to get the exact item we need, because some item may be decided in runtime.
-                    segLogs[index + 1].PatternContext.Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Value)));
+                    segLogs[index + 1].ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.ContextValue)));
 
                     var tempIndex = helper.GetLogIndexByFiltersFromIndex(filters, temp);
 
                     if (tempIndex == -1)
                     {
-                        //return segInstance;// we may still need to do some further things
+                        curLog.IsBreakPoint = true;// we may still need to do some further things
 
                         //something bad happens, for now we just define this as an error,
                         //we need to be more robust in future realizing that missing one item does not necessarily mean something wrong((because CDFControl sometimes loses items)
@@ -99,8 +100,6 @@ namespace CitrixAutoAnalysis.analysis.engine
                 }
             }
 
-            segInstance.IndexInPattern = segment.IndexInPattern;
-
             return segInstance;
 
         }
@@ -109,13 +108,13 @@ namespace CitrixAutoAnalysis.analysis.engine
         {
             List<Log> result = new List<Log>();
 
-            foreach(Log log in node.Log)
+            foreach(Log log in node.LogInCurrent())
             {
                 result.AddRange(GetAllMatchingLog(log, helper));
 
             }
 
-            return result.OrderBy( log => log.IndexInSeg).ToList();
+            return result.OrderBy(log => log.IndexInParent).ToList();
         }
 
         public List<Log> GetAllMatchingLog(Log log, CDFHelper helper)
@@ -124,7 +123,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             HashSet<CDFFilter> filters = new HashSet<CDFFilter>();
 
             //we want to use the "filters" to get the exact item we need, because some item may be decided in runtime.
-            log.PatternContext.Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Value)));
+            log.ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.ContextValue)));
 
             filters.Add(filter);
 

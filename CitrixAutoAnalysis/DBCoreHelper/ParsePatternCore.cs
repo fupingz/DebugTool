@@ -22,7 +22,7 @@ namespace CitrixAutoAnalysis.ParsePatern
         }
 
 
-        public void ParsePattern(Object pattern, bool isIssued = false)
+        public void ParsePattern(Pattern pattern, bool isIssued = false)
         {
             Trace.WriteLine("ParsePattern start to tracing...");
             if(!dbHelper.DBOpen())
@@ -32,18 +32,20 @@ namespace CitrixAutoAnalysis.ParsePatern
             }
             
             // begin  to parse pattern
-            Pattern patternc = (Pattern)pattern;
-            Trace.WriteLine("begin to write pattern into the DB");
-            writePatternIntoDB(patternc, patternc.PatternName, isIssued);
-            List<Segment> listSeg = patternc.Graph.Segments;
-            List<List<Log>> nodeList = new List<List<Log>>();
+            Trace.WriteLine("begin to write pattern("+pattern.NodeId+") into the DB");
+            //writePatternIntoDB(patternc, patternc.NodeName, isIssued);
+            pattern.ToDB();
+            //replace xiaosong's code
 
-            Trace.WriteLine("begin to write the segment into DB");
-            ProcessSegList(listSeg, patternc.Graph.NodeId.ToString());
+            List<AbstractNode> listSeg = pattern.SegInCurrent();
+            //List<List<Log>> nodeList = new List<List<Log>>();
+
+            Trace.WriteLine("begin to write the segments into DB");
+            ProcessSegList(listSeg, pattern.Graph.NodeId.ToString());
             dbHelper.DBClose();
 
         }
-        private void ProcessSegList(List<Segment> segList, string parentId)
+        private void ProcessSegList(List<AbstractNode> segList, string parentId)
         {
             //退出条件
             if (segList.Count <= 0)
@@ -54,24 +56,35 @@ namespace CitrixAutoAnalysis.ParsePatern
             int indexer = 1;// the order that this segment in the children segments.
             foreach (Segment seg in segList)
             {
-                //递归的处理Segment的孩子
-                Trace.WriteLine(String.Format("begin to process sub segment for this segment recursivly. and the segment id is {0}", seg.NodeId.ToString()));
-                ProcessSegList(seg.SubSegment, seg.NodeId.ToString());
+                if (seg.SubSegment != null)
+                {
+                    //递归的处理Segment的孩子
+                    Trace.WriteLine(String.Format("begin to process sub segment for this segment recursivly. and the segment id is {0}", seg.NodeId.ToString()));
+                    ProcessSegList(seg.SubSegment, seg.NodeId.ToString());
+                }
+
                 //处理完成后把自己存入数据库
-                Trace.WriteLine("wite the segment {0} into DB",seg.NodeId.ToString());
-                writeSegIntoDB(seg, parentId, indexer++);
+                Trace.WriteLine("wite the segment(" + seg.NodeId.ToString() + ") into DB");
+                //writeSegIntoDB(seg, parentId, indexer++);
+                seg.ToDB();
+                //Replace xiaosong's code
+                
                 // get and store all the node for segment
                 int order = 1; // the order that this node in the children nodes.
-                foreach (Log node in seg.Log)
+                foreach (Log node in seg.LogInCurrent())
                 {
                     //store the log into database
-                    Trace.WriteLine(String.Format("store the logs into db, and the log order is {0}", order));
-                    writeLogIntoDB(node, seg.NodeId.ToString(), node.IndexInSeg);
-                    if(node.PatternContext != null)
+                    Trace.WriteLine(String.Format("store the logs into db, and the log order is " + order));
+                    //writeLogIntoDB(node, seg.NodeId.ToString(), node.IndexInParent);
+                    node.ToDB();
+                    //Replace xiaosong's code
+                    if(node.ContextInCurrent() != null)
                     {
-                        foreach (Context cont in node.PatternContext)
+                        foreach (Context cont in node.ContextInCurrent())
                         {
-                            writeContextIntoDB(cont, node.NodeId.ToString());
+                            //writeContextIntoDB(cont, node.NodeId.ToString());
+                            cont.ToDB();
+                            //Replace xiaosong's code
                         }
                     }
                 }
@@ -81,8 +94,8 @@ namespace CitrixAutoAnalysis.ParsePatern
         private void writePatternIntoDB(Pattern pattern, string parent,bool isIssued)
         {
             dbHelper.DBAddLine(DataBaseHelper.DataBaseHelper2.PATTERNTABLENAME,null, 
-                new NameAndValues("ID",(pattern.Graph.NodeId).ToString()),
-                new NameAndValues("Name",pattern.PatternName),
+                new NameAndValues("ID",(pattern.NodeId).ToString()),
+                new NameAndValues("Name",pattern.NodeName),
                 new NameAndValues("ProductName", (pattern.ProductVersion).ProductName),
                 new NameAndValues("Version", pattern.ProductVersion.Version),
                 new NameAndValues("HotfixLevel", pattern.ProductVersion.HotfixLevel),
@@ -103,7 +116,7 @@ namespace CitrixAutoAnalysis.ParsePatern
             dbHelper.DBAddLine(DataBaseHelper.DataBaseHelper2.SEGMENTTABLENAME, null, 
                 new NameAndValues("ID", seg.NodeId.ToString()), 
                 new NameAndValues("ParentID", parentId),
-                new NameAndValues("Name",seg.Name),
+                new NameAndValues("Name",seg.NodeName),
                 new NameAndValues("IndexInPattern",order.ToString()),
                 new NameAndValues("Collected", null));
 
@@ -146,12 +159,12 @@ namespace CitrixAutoAnalysis.ParsePatern
             //}
             //construct new line to add to the table.
             dbHelper.DBAddLine(DataBaseHelper.DataBaseHelper2.CONTEXTTABLENAME, null,
-                new NameAndValues("ID", cont.Id.ToString()),
+                new NameAndValues("ID", cont.NodeId.ToString()),
                 new NameAndValues("LogID", parentId),
-                new NameAndValues("Name", cont.Name),
+                new NameAndValues("Name", cont.NodeName),
                 new NameAndValues("Type", ContextTypeConverter.ContextTypeToString(cont.ContextType)),
-                new NameAndValues("Value", cont.Value),
-                new NameAndValues("ParamIndex",cont.Index.ToString()));
+                new NameAndValues("Value", cont.ContextValue),
+                new NameAndValues("ParamIndex",cont.ParamIndex.ToString()));
 
         }
         /// <summary>
@@ -186,7 +199,7 @@ namespace CitrixAutoAnalysis.ParsePatern
                                 pg.Graph.NodeId = new Guid(nv.value);
                                 break;
                    case "Name" :
-                        pg.PatternName= nv.value;
+                        pg.NodeName = nv.value;
                                 break;
                    case "Version":
                         //pg.SetVersion(nv.value);
@@ -202,19 +215,23 @@ namespace CitrixAutoAnalysis.ParsePatern
             }
             pg.ProductVersion= pv;
         }
-        private List<Segment> getSegmentFromDB(string parentId)
+        private List<Segment> getSegmentFromDB(AbstractNode parent)
         {
             List<Segment> listSeg = new List<Segment>();
             //在数据库中查找所有指向parentId的行，并根据ID创建segment
-            List<DataRow> listNv = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.SEGMENTTABLENAME,null, parentId);
+            List<DataRow> listNv = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.SEGMENTTABLENAME,null, parent.NodeId.ToString());
             //遍历所有的节点，如果ID相同，则为一个新的segment
             foreach(DataRow row in listNv)
             {
-                Segment segNode = new Segment(null);
+                Guid segId = Guid.Empty;
+                string segName = "";
                 if (row["ID"] != DBNull.Value)
-                    segNode.NodeId = new Guid(row["ID"].ToString());
+                    segId = new Guid(row["ID"].ToString());
                 if (row["Name"] != DBNull.Value)
-                    segNode.Name = row["Name"].ToString();
+                    segName = row["Name"].ToString();
+
+                Segment segNode = new Segment(segId, parent, segName, 0);
+
                 //if (row["ParentID"] != DBNull.Value)
                 //    segNode.NodeId = new Guid(row["ID"].ToString());
                 //if (row["ID"] != DBNull.Value)
@@ -222,36 +239,41 @@ namespace CitrixAutoAnalysis.ParsePatern
                 //if (row["ID"] != DBNull.Value)
                 //    segNode.NodeId = new Guid(row["ID"].ToString());
                 //递归的访问所有的subsegment
-                List<Segment> segs = getSegmentFromDB(segNode.NodeId.ToString());
-                HashSet<Log> logs = getLogsFromDB(segNode.NodeId.ToString());
-                segNode.SubSegment = segs;
-                segNode.Log = logs;
-                listSeg.Add(segNode);
+
+                //Fuping comments out here since we don't need this in coming future
+                //List<Segment> segs = getSegmentFromDB(segNode.NodeId.ToString());
+                //HashSet<Log> logs = getLogsFromDB(segNode);
+                //segNode.SubSegment = segs;
+                //segNode.Log = logs;
+                //listSeg.Add(segNode);
             }
 
             return listSeg;
         }
-        private HashSet<Log> getLogsFromDB(string segId)
+        private HashSet<Log> getLogsFromDB(AbstractNode parent)
         {
             HashSet<Log> listNodes = new HashSet<Log>();
             //在数据库中查找所有指向parentId的行，并根据ID创建Node
-            List<DataRow> listDr = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.LOGTABLENAME, null, segId);
+            List<DataRow> listDr = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.LOGTABLENAME, null, parent.NodeId.ToString());
             foreach(DataRow dr in listDr)
             {
-                Log node = new Log();
-                node.NodeId = new Guid(dr["ID"].ToString());
-                node.CapturedTime = (DateTime)(dr["Time"]);
-                node.Src = dr["Source"].ToString();
-                node.Func = dr["FunctionName"].ToString();
-                node.Line = Int32.Parse(dr["LineNum"].ToString());
-                node.SessionId = Int32.Parse(dr["SessionID"].ToString());
-                node.ProcessId = Int32.Parse(dr["ProcessID"].ToString());
-                node.ThreadId = Int32.Parse(dr["ThreadID"].ToString());
-                node.Text = dr["Text"].ToString();
-                node.IndexInSeg = Int32.Parse(dr["IndexInSegment"].ToString());
+                Guid NodeId = new Guid(dr["ID"].ToString());
+                DateTime CapturedTime = (DateTime)(dr["Time"]);
+                string Src = dr["Source"].ToString();
+                string Module = dr["Module"].ToString();
+                string Func = dr["FunctionName"].ToString();
+                int Line = Int32.Parse(dr["LineNum"].ToString());
+                int SessionId = Int32.Parse(dr["SessionID"].ToString());
+                int ProcessId = Int32.Parse(dr["ProcessID"].ToString());
+                int ThreadId = Int32.Parse(dr["ThreadID"].ToString());
+                string Text = dr["Text"].ToString();
+                int IndexInSeg = Int32.Parse(dr["IndexInSegment"].ToString());
+                int IndexInTrace = Int32.Parse(dr["IndexInTrace"].ToString());
+                Log node = new Log(NodeId, null, Module, Src, Func, Line, Text, SessionId, ProcessId, ThreadId, CapturedTime, IndexInSeg, IndexInTrace, RelationWithPrevious.Unknown);
+                    
                 //node.RelationWithPrevious = dr["RelationWithPrevious"];
-                List<Context> conts = getContextFromDB(node.NodeId.ToString());
-                node.PatternContext = conts;
+                List<Context> conts = getContextFromDB(node);
+                conts.ForEach(con => node.AddChildNode(con));
                 listNodes.Add(node);
 
 
@@ -259,22 +281,21 @@ namespace CitrixAutoAnalysis.ParsePatern
             }
             return listNodes;
         }
-        private List<Context> getContextFromDB(string nodeId)
+        private List<Context> getContextFromDB(AbstractNode parent)
         {
             List<Context> conts = new List<Context>();
 
             //在数据库中查找所有指向parentId的行，并根据ID创建Node
-            List<DataRow> listDr = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.CONTEXTTABLENAME, null, nodeId);
+            List<DataRow> listDr = dbHelper.getTableRowbyNameOrId(DataBaseHelper.DataBaseHelper2.CONTEXTTABLENAME, null, parent.NodeId.ToString());
             foreach (DataRow dr in listDr)
             {
-                Context cnt = new Context();
-                cnt.Id = new Guid(dr["ID"].ToString());
-                cnt.Name = dr["Name"].ToString();
-                cnt.ContextType = ContextTypeConverter.StringToContextType(dr["Type"].ToString());
-                cnt.Value = dr["Value"].ToString();
-                cnt.Index = Int32.Parse(dr["ParamIndex"].ToString());
+                Guid conId = new Guid(dr["ID"].ToString());
+                string conName = dr["Name"].ToString();
+                ContextType conType = ContextTypeConverter.StringToContextType(dr["Type"].ToString());
+                string conValue = dr["Value"].ToString();
+                int conIndex = Int32.Parse(dr["ParamIndex"].ToString());
 
-                conts.Add(cnt);
+                conts.Add(new Context(conId ,(Log)parent, conName, conValue, conIndex, conType));
 
             }
 

@@ -47,15 +47,14 @@ namespace CitrixAutoAnalysis.pattern.generator
 
             string patternName = reader.ReadLine();//the first line is the name
 
-            Pattern ptn = new Pattern(Guid.NewGuid(), patternName, version);
-            Graph graph = new Graph();
+            Pattern ptn = new Pattern(Guid.NewGuid(), patternName, version, false);
+            Graph graph = new Graph(Guid.NewGuid(), ptn, "default graph");
 
             //2 empty line between each segments to make this work
             for (line = reader.ReadLine(); line != null && line.Length == 0; line = reader.ReadLine())
             {
                 Segment segment = processSegment(reader);
-                graph.AddSegment(segment);//generate the xml content for each segment
-                segment.Log.AsParallel().ForAll(log => graph.AddLog(log));
+                graph.AddChildNode(segment);//generate the xml content for each segment
             }
             return graph;
         }
@@ -64,7 +63,7 @@ namespace CitrixAutoAnalysis.pattern.generator
         public Segment processSegment(StreamReader reader)
         {
             string segName = reader.ReadLine(); // the first line is the seg name
-            Segment segment = new Segment(segName);
+            Segment segment = new Segment(Guid.NewGuid(), null, segName, 0);
 
             ProcessLogItems(segment,reader);
 
@@ -78,7 +77,8 @@ namespace CitrixAutoAnalysis.pattern.generator
             {
                 string[] elements = line.Split('	');//elements ares split via 'tab' key
                 
-                Log item = new Log(elements[6],                      //module
+                Log item = new Log(Guid.NewGuid(), null, 
+                                           elements[6],                      //module
                                            elements[7],                      //src
                                            elements[7] == "_#dotNet#_" ? "" : elements[9],        //func                   
                                            Convert.ToInt32(elements[8]),     //line
@@ -86,9 +86,10 @@ namespace CitrixAutoAnalysis.pattern.generator
                                            Convert.ToInt32(elements[5]),     //sessionId
                                            Convert.ToInt32(elements[4]),     //processId
                                            Convert.ToInt32(elements[3]),     //threadId
-                                           Convert.ToDateTime(elements[2].Substring(0, elements[2].LastIndexOf(":")))); //capturedTime
+                                           Convert.ToDateTime(elements[2].Substring(0, elements[2].LastIndexOf(":"))), //capturedTime
+                                           0, 0, RelationWithPrevious.Unknown); //index in trace
 
-                segment.AddLog(item);
+                segment.AddChildNode(item);
             }
         }
     }

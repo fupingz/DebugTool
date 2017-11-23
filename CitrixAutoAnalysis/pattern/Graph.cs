@@ -8,30 +8,34 @@ using System.Xml.Linq;
 
 namespace CitrixAutoAnalysis.pattern
 {
-    class Graph: AbstractNode
+    public class Graph: AbstractNode
     {
-        private List<Segment> segments = new List<Segment>();
-        private HashSet<Log> log = new HashSet<Log>();
+        public Graph(Guid id, AbstractNode prnt, string name) : base(id, prnt, name, 0) { }
 
-        public override bool IsMatch(AbstractNode instance)
+        public bool IsMatch(Graph instance)
         {
-            return false;
+            bool MatchSeg = instance.ChildNodes.Count == this.ChildNodes.Count;
+            bool MatchLog = instance.LogInCurrent().Count == this.LogInCurrent().Count;
+            bool MatchContext = instance.ContextInCurrent().Count == this.ContextInCurrent().Count;// we may need to do some further validation regarding the context value
+            bool NoError = instance.LogInCurrent().Any(l => l.IsForDebug) && instance.LogInCurrent().Any(l => l.IsBreakPoint);
+
+            return MatchSeg && MatchLog && MatchContext && NoError;
         }
 
         public override string ToXml()
         {
             string xmlContent = "<graph><segments>";
-            foreach (Segment seg in segments)
+            foreach (Segment seg in this.ChildNodes)
             {
                 xmlContent += seg.ToXml();
             }
             xmlContent += "</segments><log>";
-            foreach (Log logItem in log)
+            foreach (Log logItem in this.LogInCurrent())
             {
                 xmlContent += logItem.ToXml();//here we need the log details;
             }
             xmlContent += "</log><context>";
-            foreach (Context c in this.PatternContext)
+            foreach (Context c in this.ContextInCurrent())
             {
                 xmlContent += c.ToXml();
             }
@@ -43,50 +47,68 @@ namespace CitrixAutoAnalysis.pattern
         public static AbstractNode FromXml(Pattern pattern, XElement element) {//deserialize the xml format pattern into objects.
 
             List<XElement> segments = element.Descendants("segment").ToList();
+            Graph graph = new Graph(Guid.NewGuid(), pattern, "default graph");
+
+            segments.ForEach(seg => Segment.FromXml(seg, graph));
+
             List<XElement> log = element.Descendants("logitem").ToList();
+            List<Log> parsedLog = new List<Log>();
+
+            foreach(XElement elem in log)
+            {
+                parsedLog.Add((Log)Log.FromXml(null, elem));
+            }
+
             List<XElement> context = element.Descendants("contextitem").ToList();
-            Graph graph = new Graph();
+            List<Context> parsedContext = new List<Context>();
 
-            context.ForEach(e => pattern.AddContext(Context.FromXml(e)));
-            log.ForEach(e => pattern.AddLog((Log)(CitrixAutoAnalysis.pattern.Log.FromXml(pattern, e))));
+            foreach (XElement elem in context)
+            {
+                parsedContext.Add((Context)Context.FromXml(null, elem));
+            }
 
-            graph.PatternContext = pattern.PatternContext;
-            graph.Log = pattern.Log;
+            foreach (Log l in parsedLog)
+            {
+                List<AbstractNode> real = new List<AbstractNode>();
+                foreach (Context con in l.ChildNodes)
+                {
+                    real.Add(parsedContext.First(p => p.NodeId == con.NodeId));
+                }
 
-            segments.ForEach(e => graph.AddSegment((Segment)(Segment.FromXml(e, graph))));
+                l.ChildNodes.Clear();
+
+                foreach(Context  item in real)
+                {
+                    item.Parent = l;
+                    l.ChildNodes.Add(item);
+                }
+            }
+
+            foreach (Segment seg in graph.ChildNodes)
+            {
+                List<AbstractNode> real = new List<AbstractNode>();
+
+                foreach(Log l in seg.ChildNodes)
+                {
+                    real.Add(parsedLog.First(p => p.NodeId == l.NodeId));
+                }
+
+                seg.ChildNodes.Clear();
+
+                foreach(Log item in real)
+                {
+                    item.Parent = seg;
+                    seg.ChildNodes.Add(item);
+                }
+            }
 
             return graph;
         }
-
-        public void AddSegment(Segment segment) {
-            this.segments.Add(segment);
-        }
-
-        public void AddLog(Log logNode)
+ 
+        public override string ConstructSql()
         {
-            this.log.Add(logNode);
-        }
-
-        public Log GetPatternLogById(Guid guid)
-        {
-            return log.First(l => l.NodeId.Equals(guid));
-        }
-
-        public Segment GetPatternSegById(Guid guid)
-        {
-            return segments.First(s => s.NodeId.Equals(guid));
-        }
-
-        public List<Segment> Segments
-        {
-            get { return segments; }
-            set { segments = value; }
-        }
-
-        public HashSet<Log> Log
-        {
-            get { return log; }
-            set { log = value; }
+            //save the pattern itself into patterntable
+            return "insert into SegmentTable values('" + this.NodeId + "','" + this.Parent.NodeId + "','" + this.NodeName + "',1, null)";
         }
     }
 }

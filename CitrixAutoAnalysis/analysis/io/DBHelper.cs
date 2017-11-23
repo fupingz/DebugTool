@@ -44,10 +44,17 @@ namespace CitrixAutoAnalysis.analysis.io
 
         public DataTable FillDataTable(string SqlString) {
             SqlCommand cmd = new SqlCommand(SqlString, conn);
+            cmd.CommandTimeout = 240;//4 mintues engough?
             SqlDataAdapter da = new SqlDataAdapter(cmd);
             DataTable dt = new DataTable();
-            da.Fill(dt);
-
+            try
+            {
+                da.Fill(dt);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error running the sql"+SqlString+" : "+ex.ToString());
+            }
             return dt;
         }
 
@@ -69,8 +76,15 @@ namespace CitrixAutoAnalysis.analysis.io
         public bool UpdateDB(string SqlString)
         {
             SqlCommand cmd = new SqlCommand(SqlString, conn);
+            int result = 0;
 
-            return 1 == cmd.ExecuteNonQuery();
+            try
+            {
+                result = cmd.ExecuteNonQuery();
+            }catch(Exception ex){
+                Console.WriteLine("Error running the sql"+SqlString+" : "+ex.ToString());
+            }
+            return 1 == result;
         }
     }
 }

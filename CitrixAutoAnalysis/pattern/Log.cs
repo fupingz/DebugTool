@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 namespace CitrixAutoAnalysis.pattern
 {
-    class Log : AbstractNode
+    public class Log : AbstractNode
     {
         private string module;
         private string src;
@@ -18,7 +18,7 @@ namespace CitrixAutoAnalysis.pattern
         private int sessionId;
         private int processId;
         private int threadId;
-        private int indexInSeg; // the index of the log in the segment, so we can know the orders
+        private int indexInTrace; // the index of the log in the captured trace, so we know where it is in the trace file.
 
         private DateTime capturedTime;
 
@@ -37,25 +37,11 @@ namespace CitrixAutoAnalysis.pattern
 
         private static string ParamMagic = @"*#_PARAM_INDEX_";
 
-        public Log() { }
 
-        public Log(string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime) {
-            this.module = Module;
-            this.src    = Src;
-            this.func   = Func;
-            this.line   = Line;
-            this.text   = Text;
-
-            this.sessionId = SessionId;
-            this.processId = ProcessId;
-            this.threadId = ThreadId;
-
-            this.capturedTime = CapturedTime;
-        }
-
-
-        public Log(Guid id, string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime, int index, RelationWithPrevious Rwp)
-            : base(id)
+        public Log(Guid id, Segment prnt, string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime, int indexInParent, int indexInTrace, RelationWithPrevious Rwp)
+            : base(id, prnt, "", indexInParent)
+            //normally we don't have a name for a log item
+            // under the normal location where Log object is instantiated(read from db), we don't know the index, so setting it to 0
         {
             this.module = Module;
             this.src = Src;
@@ -69,12 +55,12 @@ namespace CitrixAutoAnalysis.pattern
 
             this.capturedTime = CapturedTime;
 
-            this.indexInSeg = index;
+            this.indexInTrace = indexInTrace;
 
             this.rwp = Rwp;
         }
 
-        public override bool IsMatch(AbstractNode instance) {
+        public bool IsMatch(Log instance) {
 
             var log = instance as Log;
 
@@ -115,9 +101,9 @@ namespace CitrixAutoAnalysis.pattern
             xmlContent += "<text>" + this.Text + "</text>";
 
             xmlContent += "<context>";
-            foreach (Context c in this.PatternContext)
+            foreach (Context c in this.ContextInCurrent())
             {
-                xmlContent += "<id>"+c.Id+"</id>";//here we just need the Id to reference to the context
+                xmlContent += "<id>"+c.NodeId+"</id>";//here we just need the Id to reference to the context
             }
             xmlContent += "</context>";
 
@@ -126,7 +112,7 @@ namespace CitrixAutoAnalysis.pattern
             return xmlContent;
         }
 
-        public static AbstractNode FromXml(Pattern pattern, XElement element)
+        public static AbstractNode FromXml(AbstractNode parent/*never use parent here, because it's fake*/, XElement element)
         {
             string id = element.Descendants("id").First().Value;
             string index = element.Descendants("index").First().Value;
@@ -141,24 +127,23 @@ namespace CitrixAutoAnalysis.pattern
             string rwp = element.Descendants("RelationWithPrevious").First().Value;
             string text = element.Descendants("text").First().Value;
 
+            Log log = new Log(Guid.Parse(id), null, module, src, func, Convert.ToInt32(line), text,
+                              Convert.ToInt32(sessionId), Convert.ToInt32(processId), Convert.ToInt32(threadId),
+                              DateTime.Parse(time), Convert.ToInt32(index), 0, LogRelationConverter.StringToLogRelation(rwp));
+
             List<Guid> contextIds = new List<Guid>();
-            element.Descendants("context").Descendants("id").ToList().ForEach(e => contextIds.Add(Guid.Parse(e.Value)));
-
-            Log log = new Log(Guid.Parse(id), module, src, func, Convert.ToInt32(line), text, 
-                              Convert.ToInt32(sessionId), Convert.ToInt32(processId), Convert.ToInt32(threadId), 
-                              DateTime.Parse(time), Convert.ToInt32(index),LogRelationConverter.StringToLogRelation(rwp));
-
-            log.PatternContext = pattern.PatternContext.Where(e => contextIds.Any(c =>e.Id == c)).ToList();
+            element.Descendants("context").Descendants("id").ToList().ForEach(e => log.AddChildNode(new Context(Guid.Parse(e.Value), log, "","",0,ContextType.Unknown)));
 
             return log;
         }
 
-        public void ExtractContextViaPattern(Log pattern)
+        public void ExtractContextViaPattern(Log patternLog)
         {
-            foreach (Context con in pattern.PatternContext)
+            foreach (Context con in patternLog.ContextInCurrent())
             {
-                Context context = new Context(Guid.NewGuid(), con.Name, con.ParamIndex, this.NodeId, con.ContextType);
-                context.Value = FillInParamValue(pattern, context.ParamIndex);
+                string conVal = FillInParamValue(patternLog, con.ParamIndex);
+                Context context = new Context(Guid.NewGuid(), this, con.NodeName, conVal, con.ParamIndex, con.ContextType);
+                context.Parent = this;
 
                 this.AddContext(context);
             }
@@ -199,6 +184,20 @@ namespace CitrixAutoAnalysis.pattern
             }
 
             return paramVal;
+        }
+
+        public override string ConstructSql()
+        {
+            string cdfText = this.Text.Replace('\'', '\"');
+
+            string sql = "insert into LogTable values('" + NodeId + "','" + Parent.NodeId + "'," + IndexInParent + ",'" + CapturedTime.ToString() + "','" + Src + "','" + Func + "'," + Line + ",'" + Module + "'," + SessionId + "," + ProcessId + "," + ThreadId + "," + (int)RWP + ",'" + cdfText + "'," + IndexInTrace + "," + (IsForDebug ? 1 : 0) + "," + (IsBreakPoint ? 1 : 0) + ")";
+
+            return sql;
+        }
+
+        public void AddContext(Context cntx)
+        {
+            childNodes.Add(cntx);
         }
 
         public CDFLogMode Mode {
@@ -260,13 +259,10 @@ namespace CitrixAutoAnalysis.pattern
             set { capturedTime = value; }
         }
 
-        // we are reusing this property,
-        // for pattern logs, it''s the index in the pattern
-        // for real CDF lofs, it's the index in the log file
-        public int IndexInSeg
+        public int IndexInTrace
         {
-            get { return indexInSeg; }
-            set { indexInSeg = value; }
+            get { return indexInTrace; }
+            set { indexInTrace = value; }
         }
 
         public RelationWithPrevious RWP {

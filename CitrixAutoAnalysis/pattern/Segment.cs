@@ -7,25 +7,14 @@ using System.Xml.Linq;
 
 namespace CitrixAutoAnalysis.pattern
 {
-    class Segment : AbstractNode
+    public class Segment : AbstractNode
     {
         private Dictionary<Segment, SegmentRelation> connectedSegments = new Dictionary<Segment,SegmentRelation>();
-        private HashSet<Log> log = new HashSet<Log>();
-        private Graph parent;
-        private string segName;
-        private int indexInPattern;
 
-        public Segment(Guid SegId, string SegName, int index, Graph parent)
-            : base(SegId)
+        public Segment(Guid SegId, AbstractNode prnt, string name, int index)
+            : base(SegId, prnt, name, index)
         {
-            this.segName = SegName;
-            this.indexInPattern = index;
-            this.parent = parent;
-        }
 
-        public Segment(string name)
-        {
-            this.segName = name;
         }
 
         public void AddConnectedSegment(Segment node, SegmentRelation relation)
@@ -33,23 +22,13 @@ namespace CitrixAutoAnalysis.pattern
             this.connectedSegments.Add(node, relation);
         }
 
-        public void AddLog(Log logNode)
-        {
-            this.log.Add(logNode);
-        }
-
-        public HashSet<Log> Log {
-            get { return log; }
-            set { log = value; }
-        }
-
         public override string ToXml() {
             string xmlContent = "<segment>";
             xmlContent += "<id>"+this.NodeId+"</id>";
-            xmlContent += "<name>" + this.segName + "</name>";
+            xmlContent += "<name>" + this.NodeName + "</name>";
 
             xmlContent += "<log>";
-            foreach (Log logItem in log)
+            foreach (Log logItem in this.LogInCurrent())
             {
                 xmlContent += "<id>"+logItem.NodeId+"</id>";
             }
@@ -66,14 +45,17 @@ namespace CitrixAutoAnalysis.pattern
             string segId = element.Descendants("id").First().Value;
             string segName = element.Descendants("name").First().Value;
             int index = int.Parse(element.Descendants("index").First().Value);
-            Segment seg = new Segment(Guid.Parse(segId), segName, index, parent);
+            Segment seg = new Segment(Guid.Parse(segId), parent, segName, index);
+
+            parent.AddChildNode(seg);
 
             List<XElement> logs = element.Descendants("log").Descendants("id").ToList();
             List<XElement> connSegs = element.Descendants("connectedSegments").Descendants("id").ToList();
 
             foreach (XElement ele in logs)
             {
-                seg.AddLog(parent.GetPatternLogById(Guid.Parse(ele.Value)));
+                //we are adding a fake log item here, will fill in the info when log item is parsed from xml
+                seg.AddChildNode(new Log(Guid.Parse(ele.Value), seg, "","","",0,"",0,0,0,DateTime.Now,index, 0, RelationWithPrevious.Unknown));
             }
 
             foreach (XElement ele in connSegs)
@@ -85,28 +67,24 @@ namespace CitrixAutoAnalysis.pattern
             return seg;
         }
 
+        public override string ConstructSql()
+        {
+            //save the pattern itself into patterntable
+            return "insert into SegmentTable values('" + this.NodeId + "','" + this.Parent.NodeId + "','" + this.NodeName + "'," + this.IndexInParent + ",null)";
+        }
+
         public bool BelongsTo(Graph graph)
         {
             // we need to analyze the context there, so decide if a segment belongs to the graph
             return true;
         }
 
-        public override bool IsMatch(AbstractNode node)
+        public bool IsMatch(Segment node)
         {
             return false;
         }
 
-        public string Name {
-            get { return segName; }
-            set { segName = value; }
-        }
-
-        public int IndexInPattern {
-            get { return indexInPattern; }
-            set { indexInPattern = value; }
-        }
-
-        public List<Segment> SubSegment
+        public List<AbstractNode> SubSegment
         {
             get;
             set;

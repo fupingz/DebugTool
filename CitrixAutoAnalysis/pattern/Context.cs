@@ -5,93 +5,60 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace CitrixAutoAnalysis.pattern
+namespace CitrixAutoAnalysis.pattern 
 {
-    public class Context
+    public class Context : AbstractNode
     {
-        private string name;
-        private int index; // the index of the context from the parameter list
-        private ContextType type;
-        private string value;
-        private Guid id;
-        private Guid logId;
+        private ContextType conType;
+        private string conValue;
+        private int paramIndex;
 
-
-        public Context() { }
-
-        public Context(Guid conId, string conName, string conVal, int ParamIndex, Guid LogId, ContextType ConType)
+        public Context(Guid conId, Log prnt, string conName, string conVal, int ParamIndex, ContextType ConType)
+            :   base(conId, prnt, conName, 0)//we don't really care the order of all context data in a log, so initilize it as 0
         {
-            this.id = conId;
-            this.name = conName;
-            this.value = conVal;
-            this.type = ConType;
-            this.logId = LogId;
-            this.index = ParamIndex;
+            this.conValue = conVal;
+            this.paramIndex = ParamIndex;
+            this.conType = ConType;
         }
 
-        public Context(Guid conId, string conName, int ParamIndex, Guid LogId, ContextType ConType)
+        public string ContextValue
         {
-            this.id = conId;
-            this.name = conName;
-            this.type = ConType;
-            this.logId = LogId;
-            this.index = ParamIndex;
-        }
-
-        public Guid Id {
-            get { return this.id; }
-            set { id = value; }
-        }
-
-        public int Index {
-            get { return this.index; }
-            set { index = value; }
-        }
-
-        public string Name 
-        {
-            get { return name; }
-            set { name = value; }
-        }
-
-        public string Value
-        {
-            get { return value; }
-            set { this.value = value; }
+            get { return conValue; }
+            set { this.conValue = value; }
         }
 
         public int ParamIndex
         {
-            get { return index; }
-            set { index = value;}
+            get { return paramIndex; }
+            set { paramIndex = value; }
         }
 
         public ContextType ContextType
         {
-            get { return type; }
-            set { type = value; }
+            get { return conType; }
+            set { conType = value; }
         }
 
-        public string ToXml() {
+        public override string ToXml() {
             string xmlContent = "<item>";
 
-            xmlContent += "<id>"+this.Id+"</id>";
-            xmlContent += "<name>" + this.Id + "</name>";
-            xmlContent += "<log>" + this.logId+ "</log>";
-            xmlContent += "<paraIndex>" + this.index+ "</paraIndex>";
+            xmlContent += "<id>"+this.NodeId+"</id>";
+            xmlContent += "<name>" + this.NodeName + "</name>";
+            xmlContent += "<log>" + this.Parent.NodeId+ "</log>";
+            xmlContent += "<paraIndex>" + this.ParamIndex+ "</paraIndex>";
 
             xmlContent += "</item>";
 
             return xmlContent;
         }
 
-        public static Context FromXml(XElement context)
+        public static AbstractNode FromXml(AbstractNode parent, XElement elem)
         {
-            string id = context.Descendants("id").First().Value;
-            string logId = context.Descendants("logId").First().Value;
-            string conName = context.Descendants("name").First().Value;
-            string tmpType = context.Descendants("type").First().Value;
-            string index = context.Descendants("paraIndex").First().Value;
+            string id = elem.Descendants("id").First().Value;
+            string logId = elem.Descendants("logId").First().Value;
+            string conName = elem.Descendants("name").First().Value;
+            string tmpType = elem.Descendants("type").First().Value;
+            string index = elem.Descendants("paraIndex").First().Value;
             string conValue = "";
             
             ContextType type = ContextTypeConverter.StringToContextType(tmpType);
@@ -101,7 +68,12 @@ namespace CitrixAutoAnalysis.pattern
                 conValue = tmpType;
             }
             
-            return new Context(Guid.Parse(id), conName, conValue, Convert.ToInt32(index), Guid.Parse(logId), type);
+            return new Context(Guid.Parse(id), (Log)parent, conName, conValue, Convert.ToInt32(index), type);
+        }
+
+        public override string ConstructSql()
+        {
+            return "insert into ContextTable values('" + this.NodeId + "','" + this.Parent.NodeId + "','" + this.NodeName + "','" + ContextType.ToString() + "','" + this.ContextValue + "'," + this.ParamIndex + ")";
         }
     }
 

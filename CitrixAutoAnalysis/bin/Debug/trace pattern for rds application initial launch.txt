@@ -1,0 +1,56 @@
+Application launch Pattern
+
+1: connection preparasion
+77129	1	2017/07/26 13:56:18:24006	6788	1840	0	BrokerAgent	_#dotNet#_	0	5	EntryExit	=========>>>>> CONNECTION STARTING POINT PrepareSession entry Session Key 2a224081-ed1d-4ed5-8b70-67f2ca4227d4, ConnectionMode Brokered, IsReconnect False, Launch Token 58c1baa7-a6e8-4a84-bc2f-dce782736790, Brokering Token S-1-5-21-2552686184-44782569-283658721-500
+80538	1	2017/07/26 13:56:21:28688	6788	1840	0	BrokerAgentMonitorManager	_#dotNet#_	0	5	EntryExit	MonitorManagement:AddPrepareSessionStateEntry - entry sessionKey 2a224081-ed1d-4ed5-8b70-67f2ca4227d4, brokeredUserName administrator, domain dev, isReconnect False, connectionMode Brokered, isAnonymous False
+80548	1	2017/07/26 13:56:21:29220	3460	1840	0	DirectorVdaPlugin	_#dotNet#_	0	5	EntryExit	OnPrepareSession: [SessionKey=2a224081-ed1d-4ed5-8b70-67f2ca4227d4, UserName=administrator, Domain=dev, IsReconnect=False, LaunchToken=xxxx, Success=True]
+
+
+2: TD accepts connection
+111882	1	2017/07/26 13:56:43:50482	0	0	0	TdIca	TdWsk.c	205	TdWskAcceptEvent	12	EntryExit	ENTRY --- TdWskAcceptEvent: Socket 0xFFFFFA80035F07D8
+111890	1	2017/07/26 13:56:43:50485	0	0	0	TdIca	TdListener.c	475	TdListenerAcceptEvent	10	Information	TdListenerAcceptEvent: Connection Id 8 (0xFFFFFA8002B232F0) queued for Acceptance
+112069	0	2017/07/26 13:56:43:50861	4604	1436	0	TdIca	TdHandshake.c	79	TdHandshakeThread	10	Information	TdHandshakeThread: Connection Id 8 (0xFFFFFA8002B232F0) was successfully BOUND
+
+
+3: RPM connection initialization
+112088	0	2017/07/26 13:56:43:50895	3192	1436	0	RPM	Connection.cpp	68	ctx::Connection::Connection	11	Information	ctx::Connection::Connection: Constructor ICA-CGP
+114219	0	2017/07/26 13:56:43:72373	5284	1436	0	RPM	Stack.cpp	348	ctx::CStack::InitClientInfo	16	Information	ctx::CStack::InitClientInfo: ClientAddress            : 10.158.209.106:53267
+114240	0	2017/07/26 13:56:43:72396	5284	1436	0	RPM	Stack.cpp	373	ctx::CStack::InitClientInfo	16	Information	ctx::CStack::InitClientInfo: ClientName               : WIN7-4-SF
+114244	0	2017/07/26 13:56:43:72400	5284	1436	0	RPM	Stack.cpp	378	ctx::CStack::InitClientInfo	16	Information	ctx::CStack::InitClientInfo: InitialProgram           : #DAEMON Tools Lite
+114247	0	2017/07/26 13:56:43:72403	5284	1436	0	RPM	Stack.cpp	381	ctx::CStack::InitClientInfo	16	Information	ctx::CStack::InitClientInfo: LaunchRef                : A1F71582B3878E4F0CEE44B818ADA7
+114250	0	2017/07/26 13:56:43:72405	5284	1436	0	RPM	Stack.cpp	385	ctx::CStack::InitClientInfo	16	Information	ctx::CStack::InitClientInfo: Ticket                   : 89FF8DFD932E710A98E48E79F19206
+
+
+4: Connection Validation
+114452	1	2017/07/26 13:56:43:73589	6316	1840	0	BrokerAgent	_#dotNet#_	0	1	Information	=========>>>>> LaunchManager.ValidateConnection: Connection Protocol: ProtocolTypeIca, Session Key: 00000000-0000-0000-0000-000000000000
+114453	1	2017/07/26 13:56:43:73591	6316	1840	0	BrokerAgent	_#dotNet#_	0	1	Information	   ticket        74-34-FE-C9-FE-25-57-4E-41-54-53-13-E7-5F-70-ED-33-FA-05-16-B4-32-8E-B9-20-19-54-80-40-71-68-94
+114454	1	2017/07/26 13:56:43:73592	6316	1840	0	BrokerAgent	_#dotNet#_	0	1	Information	   launch ref    7B-DA-B4-D2-AB-2A-7F-71-FF-E2-C0-47-93-FF-76-79-F2-E8-FA-8B-0B-34-C8-22-3F-9D-BA-A9-DD-6F-7B-A7
+114461	1	2017/07/26 13:56:43:73608	6316	1840	0	BrokerAgentLaunchStore	_#dotNet#_	0	1	Information	=========>>>>> ExchangeHash SUCCESS exchangeResult SessionKey 2a224081-ed1d-4ed5-8b70-67f2ca4227d4, domain dev, UserName administrator
+114845	1	2017/07/26 13:56:43:88893	6316	1840	0	BrokerAgent	_#dotNet#_	0	5	EntryExit	LaunchManager.ValidateConnection: Exit(Validated:Allow )
+114849	1	2017/07/26 13:56:43:88956	6316	1840	0	BrokerAgent	_#dotNet#_	0	1	Information	StackManager.ValidateConnection3: ValidateResult ALLOW, Session Key 2a224081-ed1d-4ed5-8b70-67f2ca4227d4, Brokered User SID S-1-5-21-2552686184-44782569-283658721-500, IsReconnect False, CredentialsType Password
+
+
+5: Session Creation
+115533	1	2017/07/26 13:56:44:42208	5260	1436	0	RPM	Connection.cpp	467	ctx::Connection::GetClientData	16	Information	ctx::Connection::GetClientData: Domain            dev
+115534	1	2017/07/26 13:56:44:42209	5260	1436	0	RPM	Connection.cpp	468	ctx::Connection::GetClientData	16	Information	ctx::Connection::GetClientData: UserName          administrator
+115543	1	2017/07/26 13:56:44:42226	5260	1436	0	RPM	Connection.cpp	476	ctx::Connection::GetClientData	16	Information	ctx::Connection::GetClientData: ClientAddress     10.158.209.106:53267
+116115	1	2017/07/26 13:56:44:44974	5260	1436	0	RPM	WtsProtocolConnection.cpp	497	ctx::CWtsProtocolConnection::AuthenticateClientToSession	3	Information	ENTRY --- ctx::CWtsProtocolConnection::AuthenticateClientToSession: Connection Ticks 47
+116207	0	2017/07/26 13:56:44:49130	2056	1436	0	RPM	Helpers2.cpp	467	RpmNotifyThread	11	Information	RpmNotifyThread: NOTIFY_CONNECT, SessionId 0
+128560	0	2017/07/26 13:56:57:47480	6708	1436	0	RPM	WtsProtocolConnection.cpp	660	ctx::CWtsProtocolConnection::ConnectNotify	3	Information	ENTRY --- ctx::CWtsProtocolConnection::ConnectNotify: Session Id 7, new Session Id 7, Connection Ticks 13057
+168696	0	2017/07/26 13:57:27:12287	5572	1436	0	RPM	WtsProtocolConnection.cpp	702	ctx::CWtsProtocolConnection::IsUserAllowedToLogon	3	Information	ENTRY --- ctx::CWtsProtocolConnection::IsUserAllowedToLogon: Session Id 7, new Session Id 7, Connection Ticks 42713
+168708	0	2017/07/26 13:57:27:12313	5572	1436	0	RPM	ConnectionLogonAllowed.cpp	139	ctx::Connection::IsUserAllowedToLogon	16	Information	ctx::Connection::IsUserAllowedToLogon: CTXLIC Client Name WIN7-4-SF
+168709	0	2017/07/26 13:57:27:12314	5572	1436	0	RPM	ConnectionLogonAllowed.cpp	140	ctx::Connection::IsUserAllowedToLogon	16	Information	ctx::Connection::IsUserAllowedToLogon: CTXLIC User Name administrator
+168828	0	2017/07/26 13:57:27:13949	5572	1436	0	RPM	ConnectionLogonAllowed.cpp	203	ctx::Connection::IsUserAllowedToLogon	12	EntryExit	ctx::Connection::IsUserAllowedToLogon: Returning success
+170286	1	2017/07/26 13:57:27:51702	5572	1436	0	RPM	WtsProtocolConnection.cpp	763	ctx::CWtsProtocolConnection::SessionArbitrationEnumeration	3	Information	ENTRY --- ctx::CWtsProtocolConnection::SessionArbitrationEnumeration: Session Id 7, Connection Ticks 43103
+181744	1	2017/07/26 13:57:32:50508	5572	1436	0	RPM	WtsProtocolConnection.cpp	819	ctx::CWtsProtocolConnection::LogonNotify	3	Information	ENTRY --- ctx::CWtsProtocolConnection::LogonNotify: Session Id 7, new Session Id 7, Connection Ticks 48095
+
+
+6: Application Startup
+225517	0	2017/07/26 13:57:42:74689	6204	6388	7	UviCoreLib	verify.cpp	1952	UviInternalVerifyHooksIntegrityOnProcessCreation	5	TC_KERNEL_HOOK	UviInternalVerifyHooksIntegrityOnProcessCreation: Executing... ProcessName: 'userinit.exe' IsWow64: 0000 ProcessId: 18F8
+236522	0	2017/07/26 13:57:45:65032	500	6392	7	UviCoreLib	verify.cpp	1952	UviInternalVerifyHooksIntegrityOnProcessCreation	5	TC_KERNEL_HOOK	UviInternalVerifyHooksIntegrityOnProcessCreation: Executing... ProcessName: 'cmstart.exe' IsWow64: 0001 ProcessId: 1244
+241808	0	2017/07/26 13:57:48:71524	1128	4676	7	cmstart	cmstart.c	369	StartupShell	9	Information	CMSTART:  StartupShell (\wfshell.exe)
+265011	0	2017/07/26 13:57:56:63600	6844	5472	-1	ICAST	ICAST.C	417	ICAStSignalWfshell	9	Information	ICAST: Launching Command: "C:\Windows\notepad.exe",   Directory: C:\Windows
+265171	1	2017/07/26 13:57:56:65845	4608	5196	7	twi	twi.c	1979	SHA_LaunchResolvedApp	9	Information	SHA_LaunchResolvedApp: The app being launched is "DAEMON Tools Lite", pCmdLine ""C:\Windows\notepad.exe""
+265217	1	2017/07/26 13:57:56:70193	4608	5196	7	applaunch	applaunch.c	1163	AL_LaunchApplicationW	12	EntryExit	AL_LaunchApplicationW: >>> 5, [ pszPublishedAppName="DAEMON Tools Lite", pszCommandLine=""C:\Windows\notepad.exe"", pszWorkingDirectory="<NULL>" ]
+265275	1	2017/07/26 13:57:56:72408	4608	5196	7	applaunch	applaunch.c	1414	AL_LaunchApplicationW	9	Information	AL_LaunchApplicationW: Creating process ""C:\Windows\notepad.exe""... [ PriorityClass=4, pszWorkingDir="NULL" ]
+265574	1	2017/07/26 13:57:57:09449	4608	5196	7	applaunch	applaunch.c	1588	AL_LaunchApplicationW	9	Information	AL_LaunchApplicationW: Successful launch of process: ""C:\Windows\notepad.exe""

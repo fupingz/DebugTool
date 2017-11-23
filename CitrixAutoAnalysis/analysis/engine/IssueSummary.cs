@@ -9,9 +9,7 @@ namespace CitrixAutoAnalysis.analysis.engine
 {
     class IssueSummary
     {
-        private Log breakPnt;
-
-        private Log errOrExcep;
+        private string rootCause;
 
         private Guid patternId;
 
@@ -23,36 +21,21 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         private string keyWords;
 
-        public IssueSummary(Log brkPnt, Log error, Guid pattern, int job, string lc, string name, HashSet<string> words)
+        public IssueSummary(string root, Guid pattern, int job, string lc, string name, HashSet<string> words)
         {
-            this.breakPnt = brkPnt;
-            this.errOrExcep = error;
+            this.rootCause = root;
             this.patternId = pattern;
             this.jobId = job;
             this.name = name;
             this.lcId = lc;
 
-            if (words == null)
-            {
-                if (error != null)
-                    words.Add(error.Module);
-                else
-                {
-                    words.Add(brkPnt.Module);
-                }
-            }
             foreach (string word in words)
-                this.keyWords += word + "##";
+                this.keyWords += word + "#";
         }
 
         public void OutputIssueToDB()
         {
-            string rootCause = errOrExcep.Text;
-            if (rootCause == null || rootCause.Length == 0)
-            {
-                rootCause = keyWords;
-            }
-            string sql = "Insert into CadIssues values('" + lcId + "'," + jobId + ", '" + keyWords + "','" + name + "','" + keyWords + "',null,0,'" + patternId.ToString() + "','"+keyWords+"')";
+            string sql = "Insert into CadIssues values('" + lcId + "'," + jobId + ", null,'" + name + "','" + rootCause + "',null,0,'" + patternId.ToString() + "','"+keyWords+"')";
 
             using (DBHelper helper = new DBHelper())
             {

@@ -22,7 +22,7 @@ namespace CitrixAutoAnalysis.analysis.engine
         {
             HashSet<AbstractNode> allNodeInstances = new HashSet<AbstractNode>();
 
-            foreach (Segment seg in graph.Segments)
+            foreach (Segment seg in graph.ChildNodes)
             {
                 MileStoneEngine engine = new MileStoneEngine(seg, helper);
                 engine.ExtractFromCDF().ForEach(node => allNodeInstances.Add(node));
@@ -39,9 +39,9 @@ namespace CitrixAutoAnalysis.analysis.engine
 
             List<Graph> graphs = new List<Graph>();
 
-            for (int index = 1; index <= graph.Segments.Count; index++)
+            for (int index = 1; index <= graph.ChildNodes.Count; index++)
             {
-                allNodes.Where(node => ((Segment)node).IndexInPattern == index).ToList().ForEach(node => AddToGraph(graphs, (Segment)node));
+                allNodes.Where(node => ((Segment)node).IndexInParent == index).ToList().ForEach(node => AddToGraph(graphs, (Segment)node));
             }
 
 
@@ -61,13 +61,11 @@ namespace CitrixAutoAnalysis.analysis.engine
 
             if (target == null)
             {
-                target = new Graph();
+                target = new Graph(Guid.NewGuid(), null, "default graph");
                 graphs.Add(target);
             }
-
-            target.AddSegment(node);
-            node.Log.ToList().ForEach(l => target.AddLog(l));
-            node.PatternContext.ForEach(c => target.AddContext(c));
+            node.Parent = target;
+            target.AddChildNode(node);
         }
 
     }

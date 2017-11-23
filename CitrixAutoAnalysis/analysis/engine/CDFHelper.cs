@@ -53,10 +53,10 @@ namespace CitrixAutoAnalysis.analysis.engine
         {
             //here we need to find the proper patterns per the input params.
             string path = Environment.CurrentDirectory+"\\cdfxml.xml";
-            if (!System.IO.File.Exists(path))
-            {
-                path = path.Substring(0, path.IndexOf("CitrixAutoAnalysis")) + "CitrixAutoAnalysis\\pattern\\patterns\\cdfxml.xml";
-            }
+            //if (!System.IO.File.Exists(path))
+            //{
+            //    path = path.Substring(0, path.IndexOf("CitrixAutoAnalysis")) + "CitrixAutoAnalysis\\pattern\\patterns\\cdfxml.xml";
+            //}
             return (Pattern)Pattern.FromXml(path);
         }
         private string ReadLogTableNameByJobId(uint jobId)
@@ -64,7 +64,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             string sql = "select ResultTable from RawTraceFiles where JobID = "+ jobId;
             string logTableName = "";
             using (DBHelper helper = new DBHelper())
-            { 
+            {
                 logTableName = helper.RetriveStringFromDB(sql);
             }
             return logTableName;
@@ -127,7 +127,7 @@ namespace CitrixAutoAnalysis.analysis.engine
                 int threadId = DBConverter.IntFromDBItem(row[3]);
                 int index = DBConverter.IntFromDBItem(row[0]);// here the ID looks the index, needs to confirm
                 DateTime time = DBConverter.DatetimeFromDBItem(row[2]) ?? DateTime.Now;
-                log.Add( new Log(Guid.NewGuid(), module, src, func, line, text, sessionId, processId, threadId,time, index,RelationWithPrevious.Unknown));
+                log.Add( new Log(Guid.NewGuid(), null, module, src, func, line, text, sessionId, processId, threadId,time, 0, index, RelationWithPrevious.Unknown));
             }
 
             return log;
@@ -154,12 +154,18 @@ namespace CitrixAutoAnalysis.analysis.engine
             TopDownEngine engine = new TopDownEngine(this, pattern.Graph);
             List<Graph> instances = engine.ExtractFromCDF();
 
-            Console.WriteLine("Job(id="+job.JobId+") ：instances(num = "+instances.Count+") were extracted");
+            Console.WriteLine("Job(id=" + job.JobId + ") ：--- SHOWING THE RESULT ---");
+            foreach (Graph g in instances)
+            {
+                Console.WriteLine("Job(id=" + job.JobId + ") ：instances("+g.NodeId+")");
+                Console.WriteLine("Job(id=" + job.JobId + ") ：Seg("+g.ChildNodes.Count+") , Log (" + g.LogInCurrent().Count+ ") , Context("+g.ContextInCurrent().Count+")");
+                Console.WriteLine();
+            }
+            Console.WriteLine("Job(id=" + job.JobId + ") ：--- SHOWING THE RESULT ---");
             List<Pattern> result = FillInPatternInfo(instances);
 
             // here we are processing the result
 
-            Console.WriteLine("Job(id=" + job.JobId + ") ：patterns(num = " + result.Count + ") were extracted");
             SummarizeAndOutputToPersistance(result);
 
             Console.WriteLine("Job(id=" + job.JobId + ") ：processsing done");
@@ -261,10 +267,10 @@ namespace CitrixAutoAnalysis.analysis.engine
             List<Pattern> patterns = new List<Pattern>();
             foreach (Graph g in graphs)
             {
-                Pattern newPattern = new Pattern(Guid.NewGuid(), pattern.PatternName, pattern.ProductVersion);
-                newPattern.Graph = g;
-                newPattern.Log = g.Log;
-                newPattern.PatternContext = g.PatternContext;
+                Pattern newPattern = new Pattern(Guid.NewGuid(), pattern.NodeName, pattern.ProductVersion, true);
+                g.Parent = newPattern;
+                newPattern.AddChildNode(g);
+
                 patterns.Add(newPattern);
             }
 
@@ -273,24 +279,51 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         private void SummarizeAndOutputToPersistance(List<Pattern> result)
         {
-            Summarize(result);
             OutputToPersistance(result);
+            Summarize(result);
         }
 
         private void Summarize(List<Pattern> result)
         {
             foreach (Pattern ptn in result)
             {
-                Log logErr = ptn.Log.First(l => l.IsForDebug);
-                Log logBreakPoint = ptn.Log.First(l => l.IsBreakPoint);
-
-                if (logErr == null && logBreakPoint == null)
+                if (ptn.IsMatch(pattern))
                 {
                     //probably there is not anything wrong
                     continue;
                 }
 
-                new IssueSummary(logBreakPoint, logErr, ptn.NodeId, (int)this.job.JobId,job.LCId, "automated analysis result", null).OutputIssueToDB();
+                HashSet<string> Keywords = new HashSet<string>();
+                string RootCause = "remain unknown";
+                Log logErr = ptn.GetDebugPoint();
+                Log logBreakPoint = ptn.GetBreakPoint();
+
+                if(logBreakPoint != null)
+                {
+                    //always calculate a breakpoint since we know there is something wrong
+                    Keywords.Add(logBreakPoint.Module);
+
+                    if(logBreakPoint.Func == null || logBreakPoint.Func.Length == 0)
+                    {
+                        RootCause = "The connection sequence breaks around printing Log : "+logBreakPoint.Text;
+                    }
+                    else
+                    {
+                        Keywords.Add(logBreakPoint.Func);
+                        RootCause = "The connection sequence breaks around calling "+ logBreakPoint.Func+" and printing Log : "+logBreakPoint.Text;
+                    }
+                }
+
+                if (logErr != null)
+                {
+                    if(logErr.Func != null && logErr.Func.Length != 0)
+                    {
+                        Keywords.Add(logErr.Func);
+                    }
+                    RootCause = "The connection sequence breaks with error recorded : " + logErr.Text;
+                }
+
+                new IssueSummary(RootCause, ptn.NodeId, (int)this.job.JobId,job.LCId, "automated analysis result", Keywords).OutputIssueToDB();
             }
         }
 
@@ -299,7 +332,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             // output to database
             ParsePatternCore PPCore = new ParsePatternCore();
             foreach (Pattern pt in result)
-                PPCore.ParsePattern(pt);
+                PPCore.ParsePattern(pt, true);
         }
     }
 

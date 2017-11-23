@@ -1,0 +1,6 @@
+C:\Github\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.exe.config
+C:\Github\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.exe
+C:\Github\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.pdb
+C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.exe
+C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.pdb
+C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.csprojResolveAssemblyReference.cache

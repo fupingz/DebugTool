@@ -99,7 +99,7 @@ namespace CitrixAutoAnalysis.pattern
 
             if (this.LogInCurrent().Any(l => l.IsBreakPoint))
             {
-                return this.LogInCurrent().First(l => l.IsBreakPoint);
+                return this.LogInCurrent().Last(l => l.IsBreakPoint);
             }
 
             this.SegInCurrent().ForEach(s => {

@@ -35,7 +35,7 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         public void OutputIssueToDB()
         {
-            string sql = "Insert into CadIssues values('" + lcId + "'," + jobId + ", null,'" + name + "','" + rootCause + "',null,0,'" + patternId.ToString() + "','"+keyWords+"')";
+            string sql = "Insert into CadIssues values('" + lcId + "'," + jobId + ", null,'" + name + "','" + rootCause.Replace('\'','"') + "',null,0,'" + patternId.ToString() + "','"+keyWords+"')";
 
             using (DBHelper helper = new DBHelper())
             {

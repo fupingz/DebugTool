@@ -70,7 +70,7 @@ namespace CitrixAutoAnalysis.pattern
         public override string ConstructSql()
         {
             //save the pattern itself into patterntable
-            return "insert into SegmentTable values('" + this.NodeId + "','" + this.Parent.NodeId + "','" + this.NodeName + "'," + this.IndexInParent + ",null)";
+            return "insert into SegmentTable values('" + this.NodeId + "','" + this.Root.NodeId + "','" + this.NodeName + "'," + this.IndexInParent + ",null)";
         }
 
         public bool BelongsTo(Graph graph)

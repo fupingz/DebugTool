@@ -40,6 +40,7 @@ namespace DataBaseHelper
         // dongsheng add 
         public const string CADTABLENAME = "CadJobs";
         public const string CADISSUESTABLENAME = "CadIssues";
+        public const string CADONEFIXCASES = "CadOnefixCases";		
         // dongsheng end
 
         // 连接字符串
@@ -345,7 +346,7 @@ namespace DataBaseHelper
                     }
                     catch
                     {
-                        Console.Write("get IntermediateResult failed " + "ID=" + ID + "\n");
+                        Console.WriteLine("get IntermediateResult failed" + "\n");
                         continue;
                     }
                     //try 
@@ -412,30 +413,138 @@ namespace DataBaseHelper
                 }
             }
         }
+        public string GetSimilarIssueInternal()
+        {
+            string IssueTitle = "unable to launch Apps ";
+            string SimilarLCID = "";
+            string SimilarLCs = "";
+            string cmd2 = "select *" + " from " + CADONEFIXCASES + " where " + " Title like \'%" + IssueTitle + "%\'";
+            SqlCommand sqlCmd2 = new SqlCommand(cmd2, conn);
+            using (var reader2 = sqlCmd2.ExecuteReader())
+            {
+                while (reader2.Read())
+                {
+                    SimilarLCID = (string)reader2["CaseID"];
+
+                    if (0 != SimilarLCID.Length)
+                    {
+                        string[] splitSimilarLCID = SimilarLCID.Split(' ');
+                        foreach (var splitSLCID in splitSimilarLCID)
+                        {
+                            if (splitSLCID.Length == 0)
+                                continue;
+
+                            SimilarLCs = SimilarLCs + splitSLCID + ",";
+                            //      Console.Write(updatecmd + "\n");
+                            if (SimilarLCs.Length >= 900)
+                                break;
+
+                        }
+                    }
+
+                }
+            }
+            return SimilarLCs;
+        }
+        public void GetSimilarIssue3()
+        {
+            string cmd = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed = \'0\'";
+            string updatecmd = "";
+            string IntermediateResult = "";
+            //string resolution    = "";
+            int ID = 0;
+            string LCID = "";
+            SqlCommand sqlCmd = new SqlCommand(cmd, conn);
+            int count = 0;
+
+
+
+            using (var reader1 = sqlCmd.ExecuteReader())
+            {
+                while (reader1.Read())
+                {
+                   
+                    //RootCause = reader1.GetString(5);
+
+                    try
+                    {
+                        LCID = (string)reader1["LCID"];
+                        Console.WriteLine("-----" + LCID);
+                        Console.WriteLine("");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("get IntermediateResult failed" + "\n");
+                        continue;
+                    }
+
+                    ID = (int)reader1["ID"];
+
+                    Console.Write(ID + "\n");
+                    if (ID == 95)
+                    {
+                        Console.Write(ID + "\n");
+                    }
+
+                    string SimilarLCs = GetSimilarIssueInternal();
+                    if (0 != SimilarLCs.Length)
+                    {
+                        string[] splitSimilarLCID = SimilarLCs.Split(' ');
+                        foreach (var splitSLCID in splitSimilarLCID)
+                        {
+                            if (splitSLCID.Length == 0)
+                                continue;
+                            //updatecmd = "update " + CADISSUESTABLENAME + " set LCID = \'" + splitSLCID + "\'" + " where JobID = \'" + JobID + "\'";
+                            updatecmd = "update " + CADISSUESTABLENAME + " set similarLCIDs = \'" + splitSLCID + "\'" + ",IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                            SqlCommand updatesqlCmd = new SqlCommand(updatecmd, conn);
+                            updatesqlCmd.ExecuteNonQuery();
+                            Console.Write(updatecmd + "\n");
+                        }
+                    }
+                    else
+                    {
+//                        updatecmd = "update " + CADISSUESTABLENAME + " set IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                        updatecmd = "update " + CADISSUESTABLENAME + " set similarLCIDs = \'" + LCID + "\'" + ",IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                        SqlCommand updatesqlCmd = new SqlCommand(updatecmd, conn);
+                        updatesqlCmd.ExecuteNonQuery();
+                        Console.Write(updatecmd + "\n");
+
+                    }
+                    count++;
+                    if (count > 15)
+                        return;
+                    Console.WriteLine("total = " + count);
+
+                }
+            }
+        }
         public void pTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            //Console.Write("timer elapsed \n");
+            Console.Write("timer elapsed \n");
             try
             {
-                GetSimilarIssue2();
+                GetSimilarIssue3();
             }
-            catch
+            catch 
             {
                 Console.WriteLine("get issue failed" + "\n");
             }
-
+            
             return;
         }
         public void StartTimerThread()
         {
-            //      GetSimilarIssue2();
-            System.Timers.Timer pTimer = new System.Timers.Timer(5000);
+            //GetSimilarIssue3();
+            System.Timers.Timer pTimer = new System.Timers.Timer(20000);
             pTimer.Elapsed += pTimer_Elapsed;
             pTimer.AutoReset = true;
             pTimer.Enabled = true;
-
+ 
             return;
         }
 
     }
+
 }
+
+//            string cmd2 = "select *" + " from " + CADISSUESTABLENAME + " where ID <> \'" + IssueID + "\'" +" and ID = \'5" + "\'";

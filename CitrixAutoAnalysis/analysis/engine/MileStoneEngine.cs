@@ -22,13 +22,23 @@ namespace CitrixAutoAnalysis.analysis.engine
             List<Log> segLogs = segment.LogInCurrent().OrderBy(i => i.IndexInParent).ToList();
             List<AbstractNode> nodes = new List<AbstractNode>();
 
-            //all the logs that matches the first item in the segment
-            List<Log> first = GetAllMatchingLog(segLogs[0], helper);
-
-            foreach (Log log in first)
+            for (int index = 0; index < segLogs.Count; index++ )
             {
-                nodes.Add(ExtractInstanceFromCDF(log));
+                //all the logs that matches the first item in the segment
+                List<Log> first = GetAllMatchingLog(segLogs[index], helper);
+
+                if (first.Count > 0)
+                {
+                    foreach (Log log in first)
+                    {
+                        log.IndexInParent = index+1;
+                        nodes.Add(ExtractInstanceFromCDF(log));
+                    }
+                    break;
+                }
             }
+
+
 
             return nodes;
         }
@@ -41,7 +51,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             bool QuitingDueToErrOrExcep = false;
 
             /*ignore the 1st since it has defintiely matched with the parameter log*/
-            for (int index = 0; index < segLogs.Count; index++)
+            for (int index = log.IndexInParent - 1; index < segLogs.Count; index++)
             { 
                 //try to match each log
                 if (temp == -1)
@@ -50,16 +60,24 @@ namespace CitrixAutoAnalysis.analysis.engine
                 }
 
                 Log curLog = helper.GetLogByIndex(temp);
-
                 curLog.IndexInParent = segLogs[index].IndexInParent;
-                curLog.RWP = segLogs[index].RWP;
+                curLog.IsUsed = true; // so no else segment will find me
                 curLog.Parent = segInstance;
-                curLog.ExtractContextViaPattern(segLogs[index]);//extract all the configured context
                 segInstance.AddChildNode(curLog);
-
-                if (QuitingDueToErrOrExcep)
+                
+                if(QuitingDueToErrOrExcep)
                 {
+                    //this is an expected error log
                     curLog.IsForDebug = true;
+                    break;
+                }
+                curLog.RWP = segLogs[index].RWP;
+                curLog.ExtractContextViaPattern(segLogs[index]);//extract all the configured context
+
+                if (!curLog.EvaluateContext())/*the log itself indicates something wrong via the param value, e.g. the validation result*/
+                {
+                    //some assertion fails
+                    curLog.IsBreakPoint = true;
                     break;
                 }
 
@@ -67,18 +85,28 @@ namespace CitrixAutoAnalysis.analysis.engine
                 {
                     HashSet<CDFFilter> filters = new HashSet<CDFFilter>();
 
-                    CDFFilter filter = ConstructFilterPerLogRelation(segLogs[index + 1], curLog);
-                    if (filter != null)
-                    {
-                        filters.Add(filter);
-                    }
-
                     filters.Add(new CDFFilter(CDFCondition.CDF_TEXT, segLogs[index + 1].Text));
 
                     //we want to use the "filters" to get the exact item we need, because some item may be decided in runtime.
-                    segLogs[index + 1].ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.ContextValue)));
+                    segLogs[index + 1].ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Assertion)));
 
-                    var tempIndex = helper.GetLogIndexByFiltersFromIndex(filters, temp);
+                    var tempIndex = -1;
+
+                    if (segLogs[index + 1].RWP == RelationWithPrevious.Parallel)
+                    {
+                        //this indicates the expected log may not be later than current one, so we just search from the beginning of current segment
+                        tempIndex = helper.GetLogIndexByFiltersFromIndex(filters, helper.GetLogIndex((Log)segInstance.ChildNodes[0]));
+                    }
+                    else 
+                    {
+                        CDFFilter filter = ConstructFilterPerLogRelation(segLogs[index + 1], curLog);
+                        if (filter != null)
+                        {
+                            filters.Add(filter);
+                        }
+
+                        tempIndex = helper.GetLogIndexByFiltersFromIndex(filters, temp);
+                    }
 
                     if (tempIndex == -1)
                     {
@@ -123,7 +151,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             HashSet<CDFFilter> filters = new HashSet<CDFFilter>();
 
             //we want to use the "filters" to get the exact item we need, because some item may be decided in runtime.
-            log.ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.ContextValue)));
+            log.ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Assertion)));
 
             filters.Add(filter);
 

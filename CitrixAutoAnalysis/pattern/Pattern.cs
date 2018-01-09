@@ -122,7 +122,14 @@ namespace CitrixAutoAnalysis.pattern
 
         public Log GetDebugPoint()
         {
-            return this.LogInCurrent().Any(l => l.IsForDebug) ? this.LogInCurrent().First(l => l.IsForDebug) : null;
+            Log brkPnt = GetBreakPoint();
+
+            Log dbgPnt = this.LogInCurrent().Any(l => l.IsForDebug) ? this.LogInCurrent().First(l => l.IsForDebug) : null;
+
+            if (dbgPnt == null || brkPnt.Parent.IndexInParent > dbgPnt.Parent.IndexInParent)
+                return null;
+
+            return dbgPnt;
         }
 
         public ProductVersion ProductVersion

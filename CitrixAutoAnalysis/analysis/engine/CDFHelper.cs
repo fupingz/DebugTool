@@ -160,6 +160,8 @@ namespace CitrixAutoAnalysis.analysis.engine
                 Console.WriteLine("Job(id=" + job.JobId + ") ：instances("+g.NodeId+")");
                 Console.WriteLine("Job(id=" + job.JobId + ") ：Seg("+g.ChildNodes.Count+") , Log (" + g.LogInCurrent().Count+ ") , Context("+g.ContextInCurrent().Count+")");
                 Console.WriteLine();
+
+                //break;
             }
             Console.WriteLine("Job(id=" + job.JobId + ") ：--- SHOWING THE RESULT ---");
             List<Pattern> result = FillInPatternInfo(instances);
@@ -177,9 +179,20 @@ namespace CitrixAutoAnalysis.analysis.engine
 
             for (int i = index; i < allLog.Count; i++)
             {
+                if (allLog[i].IsUsed)
+                {
+                    continue;
+                }
+
                 bool IsMatch = true;
+
                 foreach (CDFFilter f in filters)
                 {
+                    if (f == null)
+                    {
+                        continue;
+                    }
+
                     if (!f.IsMatch(allLog[i]))
                     {
                         IsMatch = false;
@@ -200,15 +213,23 @@ namespace CitrixAutoAnalysis.analysis.engine
         {
             CheckRange(index);
 
+
             for (int i = index; i < allLog.Count; i++)
             {
+                if (allLog[i].IsUsed)
+                {
+                    continue;
+                }
+
                 bool IsMatch = true;
+
                 foreach (CDFFilter f in filters)
                 {
                     if (f == null)
                     {
                         continue;
                     }
+
                     if (!f.IsMatch(allLog[i]))
                     {
                         IsMatch = false;
@@ -272,6 +293,18 @@ namespace CitrixAutoAnalysis.analysis.engine
                 newPattern.AddChildNode(g);
 
                 patterns.Add(newPattern);
+
+                List<Log> allBreak = newPattern.LogInCurrent().FindAll(l => l.IsBreakPoint);
+                Log lastBreak = newPattern.LogInCurrent().Last(l => l.IsBreakPoint);
+
+                foreach (Log l in allBreak)
+                {
+                    if (l != lastBreak)
+                    {
+                        l.IsBreakPoint = false;
+                    }
+                }
+
             }
 
             return patterns; 
@@ -285,6 +318,23 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         private void Summarize(List<Pattern> result)
         {
+            if (result.Count == 0)
+            { 
+                //nothing found, probably there is something wrong with the log
+                string RootCause = "No analyzable trace was found from the uploaded log. please check following items: " +
+                                   "<br/>1 : following modules are included when capturing the CDF log:" +
+                                   "    <br/>BrokerAgent, TDICA, RPM, Seamless" +
+                                   "<br/>2 : you don't have private binaries applied when capturing the log, else you need to provide the tmf files for analysis";
+
+                new IssueSummary(RootCause, Guid.NewGuid(), (int)this.job.JobId, job.LCId, "automated analysis result", new HashSet<string>{"No","Analyzable","Trace","Found"}).OutputIssueToDB();
+            }
+
+            if(result.Any(ptn =>ptn.IsMatch(pattern))&& result.All(ptn =>ptn.IsMatch(pattern)))
+            {
+                //all good results, so at least show one
+                new IssueSummary("the connection completes perfectly", result.First().NodeId, (int)this.job.JobId,job.LCId, "automated analysis result", new HashSet<string>(){"succeeded"}).OutputIssueToDB();
+            }
+
             foreach (Pattern ptn in result)
             {
                 if (ptn.IsMatch(pattern))
@@ -293,25 +343,44 @@ namespace CitrixAutoAnalysis.analysis.engine
                     continue;
                 }
 
+                //if (ptn.LogInCurrent().Count < ((pattern.LogInCurrent().Count) / 5)) //too few items found, so ignore it
+                //{
+                //    continue;
+                //}
+
+                if (!ptn.SegInCurrent().Any(seg => seg.IndexInParent == 1))
+                {
+                    continue;
+                }
+
                 HashSet<string> Keywords = new HashSet<string>();
                 string RootCause = "remain unknown";
                 Log logErr = ptn.GetDebugPoint();
                 Log logBreakPoint = ptn.GetBreakPoint();
 
-                if(logBreakPoint != null)
-                {
-                    //always calculate a breakpoint since we know there is something wrong
-                    Keywords.Add(logBreakPoint.Module);
+                if(logBreakPoint == null){ 
 
-                    if(logBreakPoint.Func == null || logBreakPoint.Func.Length == 0)
-                    {
-                        RootCause = "The connection sequence breaks around printing Log : "+logBreakPoint.Text;
-                    }
-                    else
-                    {
-                        Keywords.Add(logBreakPoint.Func);
-                        RootCause = "The connection sequence breaks around calling "+ logBreakPoint.Func+" and printing Log : "+logBreakPoint.Text;
-                    }
+                    ptn.LogInCurrent().ForEach(l =>
+                                               {
+                                                   if (logBreakPoint == null || (logBreakPoint.Parent.IndexInParent <= l.Parent.IndexInParent && logBreakPoint.IndexInParent < l.IndexInParent))
+                                                   {
+                                                       logBreakPoint = l;
+                                                   }
+                                                });
+                    logBreakPoint.IsBreakPoint = true;
+                }
+
+                //always calculate a breakpoint since we know there is something wrong
+                Keywords.Add(logBreakPoint.Module);
+
+                if(logBreakPoint.Func == null || logBreakPoint.Func.Length == 0)
+                {
+                    RootCause = "The connection sequence breaks around printing Log : "+logBreakPoint.Text;
+                }
+                else
+                {
+                    Keywords.Add(logBreakPoint.Func);
+                    RootCause = "The connection sequence breaks around calling <b>"+ logBreakPoint.Func+"</b> and printing Log : <br/><b> "+logBreakPoint.Text+"</b>";
                 }
 
                 if (logErr != null)
@@ -320,7 +389,7 @@ namespace CitrixAutoAnalysis.analysis.engine
                     {
                         Keywords.Add(logErr.Func);
                     }
-                    RootCause = "The connection sequence breaks with error recorded : " + logErr.Text;
+                    RootCause += "<br/>And a potentially responsible error recorded : <b>" + logErr.Text+"</b>";
                 }
 
                 new IssueSummary(RootCause, ptn.NodeId, (int)this.job.JobId,job.LCId, "automated analysis result", Keywords).OutputIssueToDB();

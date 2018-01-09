@@ -75,7 +75,36 @@ namespace CitrixAutoAnalysis.pattern
 
         public bool BelongsTo(Graph graph)
         {
-            // we need to analyze the context there, so decide if a segment belongs to the graph
+            // we don't need 2 duplicate segments in a same pattern
+            if (graph.ChildNodes.Any(c => c.IndexInParent == this.IndexInParent))
+            {
+                return false;
+            }
+
+            foreach (Context cs in this.ContextInCurrent())
+            {
+                foreach (Context cg in graph.ContextInCurrent())
+                {
+                    if (cs.NodeName.Equals(cg.NodeName))//same name, while different value, seperate the segments into different sequences
+                    {
+                        if (String.IsNullOrEmpty(cs.ContextValue))
+                        {
+                            if(!graph.LogInCurrent().Any(l =>l.IsBreakPoint))
+                            {
+                                ((Log)cs.Parent).IsBreakPoint = true;
+                            }
+                        }
+                        else if (String.IsNullOrEmpty(cg.ContextValue))
+                        {
+                            ((Log)cg.Parent).IsBreakPoint = true;
+                        }
+                        else if(!cs.ContextValue.Equals(cg.ContextValue)){
+                            return false;
+                        }
+                    }
+                }
+            }
+
             return true;
         }
 

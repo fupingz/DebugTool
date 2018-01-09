@@ -35,6 +35,8 @@ namespace CitrixAutoAnalysis.pattern
         //mark the log item as the location that most close to break
         private bool isBreakPoint = false;
 
+        private bool isUsed = false;
+
         private static string ParamMagic = @"*#_PARAM_INDEX_";
 
 
@@ -84,6 +86,20 @@ namespace CitrixAutoAnalysis.pattern
             }
 
             return false;
+        }
+
+        public bool EvaluateContext()
+        {
+            foreach (Context c in this.ChildNodes)
+            { 
+                if(c.ContextType == ContextType.ContextAssertion)
+                {
+                    if (!c.Assert())
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         public override string ToXml() {
@@ -142,10 +158,14 @@ namespace CitrixAutoAnalysis.pattern
             foreach (Context con in patternLog.ContextInCurrent())
             {
                 string conVal = FillInParamValue(patternLog, con.ParamIndex);
-                Context context = new Context(Guid.NewGuid(), this, con.NodeName, conVal, con.ParamIndex, con.ContextType);
-                context.Parent = this;
-
-                this.AddContext(context);
+                if (con.ContextType == ContextType.ContextAssertion || con.ContextType == ContextType.ContextFilter)
+                {
+                    this.AddChildNode(new Context(Guid.NewGuid(), this, con.NodeName, conVal, con.ParamIndex, con.ContextType, con.Assertion));
+                }
+                else
+                {
+                    this.AddChildNode(new Context(Guid.NewGuid(), this, con.NodeName, conVal, con.ParamIndex, con.ContextType));
+                }
             }
         }
 
@@ -195,11 +215,6 @@ namespace CitrixAutoAnalysis.pattern
             return sql;
         }
 
-        public void AddContext(Context cntx)
-        {
-            childNodes.Add(cntx);
-        }
-
         public CDFLogMode Mode {
             get {
                 if (this.src == "_#dotNet#_")
@@ -234,6 +249,12 @@ namespace CitrixAutoAnalysis.pattern
         public string Text {
             get { return text; }
             set { text = value; }
+        }
+
+        public bool IsUsed
+        {
+            get { return isUsed; }
+            set { isUsed = value; }
         }
 
         public int SessionId
@@ -293,7 +314,8 @@ namespace CitrixAutoAnalysis.pattern
         First,
         SameSession,
         SameProcess,
-        SameThread
+        SameThread,
+        Parallel
     }
 
     public class LogRelationConverter
@@ -310,6 +332,8 @@ namespace CitrixAutoAnalysis.pattern
                     return "SameProcess";
                 case RelationWithPrevious.SameThread:
                     return "SameThread";
+                case RelationWithPrevious.Parallel:
+                    return "Parallel";
             }
 
             return "Unknown";
@@ -329,9 +353,13 @@ namespace CitrixAutoAnalysis.pattern
             {
                 return RelationWithPrevious.SameProcess;
             }
-            else if (relation == ("SameThread"))
+            else if (relation == "SameThread")
             {
                 return RelationWithPrevious.SameThread;
+            }
+            else if (relation == "Parallel")
+            {
+                return RelationWithPrevious.Parallel;
             }
 
             return RelationWithPrevious.Unknown;

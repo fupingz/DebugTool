@@ -12,6 +12,7 @@ namespace CitrixAutoAnalysis.pattern
         private ContextType conType;
         private string conValue;
         private int paramIndex;
+        private string assertion;
 
         public Context(Guid conId, Log prnt, string conName, string conVal, int ParamIndex, ContextType ConType)
             :   base(conId, prnt, conName, 0)//we don't really care the order of all context data in a log, so initilize it as 0
@@ -19,6 +20,15 @@ namespace CitrixAutoAnalysis.pattern
             this.conValue = conVal;
             this.paramIndex = ParamIndex;
             this.conType = ConType;
+        }
+
+        public Context(Guid conId, Log prnt, string conName, string conVal, int ParamIndex, ContextType ConType, string Assert)
+            : base(conId, prnt, conName, 0)//we don't really care the order of all context data in a log, so initilize it as 0
+        {
+            this.conValue = conVal;
+            this.paramIndex = ParamIndex;
+            this.conType = ConType;
+            this.assertion = Assert;
         }
 
         public string ContextValue
@@ -37,6 +47,12 @@ namespace CitrixAutoAnalysis.pattern
         {
             get { return conType; }
             set { conType = value; }
+        }
+
+        public string Assertion
+        {
+            get { return assertion; }
+            set { assertion = value; }
         }
 
         public override string ToXml() {
@@ -65,7 +81,8 @@ namespace CitrixAutoAnalysis.pattern
             if(type == ContextType.ContextAssertion || type == ContextType.ContextFilter)
             {
                 //we need the value for these 2 kinds
-                conValue = tmpType;
+                string assert = tmpType.Split(':')[1];
+                return new Context(Guid.Parse(id), (Log)parent,conName, conValue, Convert.ToInt32(index), type, assert);
             }
             
             return new Context(Guid.Parse(id), (Log)parent, conName, conValue, Convert.ToInt32(index), type);
@@ -74,6 +91,17 @@ namespace CitrixAutoAnalysis.pattern
         public override string ConstructSql()
         {
             return "insert into ContextTable values('" + this.NodeId + "','" + this.Parent.NodeId + "','" + this.NodeName + "','" + ContextType.ToString() + "','" + this.ContextValue + "'," + this.ParamIndex + ")";
+        }
+
+        public bool Assert()
+        { 
+            //this works only for assertion
+            if (this.ContextType == ContextType.ContextAssertion)
+            {
+                return string.Equals(ContextValue, Assertion, StringComparison.OrdinalIgnoreCase);
+            }
+
+            return true;
         }
     }
 

@@ -41,21 +41,23 @@ namespace CitrixAutoAnalysis.analysis.engine
 
             for (int index = 1; index <= graph.ChildNodes.Count; index++)
             {
-                allNodes.Where(node => ((Segment)node).IndexInParent == index).ToList().ForEach(node => AddToGraph(graphs, (Segment)node));
+                allNodes.Where(node => ((Segment)node).IndexInParent == index).ToList().ForEach(node => AddToGraph(graphs, allNodes, (Segment)node));
             }
-
 
             return graphs;// group the segments into graphs
         }
 
-        private void AddToGraph(List<Graph> graphs, Segment node)
+        private void AddToGraph(List<Graph> graphs, HashSet<AbstractNode> allNodes, Segment node)
         {
             Graph target = null;
             foreach (Graph g in graphs)
             {
-                if(node.BelongsTo((Graph) g))
+                bool OnlyOneNode = node.IndexInParent > 1 && graphs.Count == 1 && allNodes.ToList().FindAll(seg => seg.IndexInParent == node.IndexInParent).ToList().Count == 1;
+
+                if(OnlyOneNode || node.BelongsTo((Graph) g))
                 {
                     target = g;
+                    break;
                 }
             }
 

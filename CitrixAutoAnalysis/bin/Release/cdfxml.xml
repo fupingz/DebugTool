@@ -505,9 +505,11 @@
 				<sessionId>0</sessionId>
 				<processId>1436</processId>
 				<threadId>2056</threadId>
-				<RelationWithPrevious>SameProcess</RelationWithPrevious>
-				<text>RpmNotifyThread: NOTIFY_CONNECT, SessionId *#_PARAM_INDEX_1</text>
-				<context/>
+				<RelationWithPrevious>Parallel</RelationWithPrevious>
+				<text>RpmNotifyThread: *#_PARAM_INDEX_1, SessionId *#_PARAM_INDEX_2</text>
+				<context>
+					<id>7135d3e0-da63-11e7-8f1a-0800200c9a66</id>
+				</context>
 			</logitem>
 			<logitem>
 				<id>64bdcef3-e030-42f7-92db-3bb6fdaaae01</id>
@@ -626,6 +628,25 @@
 				<text>ENTRY --- ctx::CWtsProtocolConnection::LogonNotify: Session Id *#_PARAM_INDEX_1, new Session Id *#_PARAM_INDEX_2, Connection Ticks *#_PARAM_INDEX_3</text>
 				<context>
 					<id>6ff5884b-dbd3-4d4f-ac3a-14c0c907f04d</id>
+				</context>
+			</logitem>
+			<logitem>
+				<id>5dc8b210-da67-11e7-8f1a-0800200c9a66</id>
+				<index>13</index>
+				<time>7/26/2017 1:57:32 PM</time>
+				<src>Helpers2.cpp</src>
+				<func>ctx::CWtsProtocolConnection::LogonNotify</func>
+				<line>432</line>
+				<module>RPM</module>
+				<sessionId>0</sessionId>
+				<processId>1436</processId>
+				<threadId>5572</threadId>
+				<RelationWithPrevious>Parallel</RelationWithPrevious>
+				<text>RpmNotifyThread: *#_PARAM_INDEX_1, SessionId *#_PARAM_INDEX_2, GUID *#_PARAM_INDEX_3</text>
+				<context>
+					<id>f50b3ad0-da67-11e7-8f1a-0800200c9a66</id>
+					<id>fcda6fb0-da67-11e7-8f1a-0800200c9a66</id>
+					<id>06276af0-da68-11e7-8f1a-0800200c9a66</id>
 				</context>
 			</logitem>
 			<logitem>
@@ -868,7 +889,7 @@
 			<contextitem>
 				<id>6d8d7f68-5aeb-4744-8cb8-f592999f05bc</id>
 				<logId>b438aa44-e010-4b80-a6d2-4cae48d61ddd</logId>
-				<name>SessionId</name>
+				<name>ConnectionId</name>
 				<type>String</type>
 				<paraIndex>1</paraIndex>
 			</contextitem>
@@ -882,8 +903,15 @@
 			<contextitem>
 				<id>76c81682-a0d4-48c3-88cf-b38c2e2ac39e</id>
 				<logId>7609c1ee-cd89-4934-82bd-3d3246b4b98f</logId>
-				<name>SessionId</name>
+				<name>ConnectionId</name>
 				<type>String</type>
+				<paraIndex>1</paraIndex>
+			</contextitem>
+		    <contextitem>
+				<id>7135d3e0-da63-11e7-8f1a-0800200c9a66</id>
+			    <logId>b1fa4302-5f14-4e88-b431-b2fc8acda0b9</logId>
+				<name>ConnectionNotification</name>
+			    <type>Assertion:NOTIFY_CONNECT</type>
 				<paraIndex>1</paraIndex>
 			</contextitem>
 			<contextitem>
@@ -1158,6 +1186,27 @@
 				<name>ClientAddress</name>
 				<type>String</type>
 				<paraIndex>1</paraIndex>
+			</contextitem>
+						<contextitem>
+				<id>f50b3ad0-da67-11e7-8f1a-0800200c9a66</id>
+				<logId>5dc8b210-da67-11e7-8f1a-0800200c9a66</logId>
+				<name>LogonNotification</name>
+				<type>Assertion:NOTIFY_LOGON</type>
+				<paraIndex>1</paraIndex>
+			</contextitem>
+			<contextitem>
+				<id>fcda6fb0-da67-11e7-8f1a-0800200c9a66</id>
+				<logId>5dc8b210-da67-11e7-8f1a-0800200c9a66</logId>
+				<name>SessionId</name>
+				<type>String</type>
+				<paraIndex>2</paraIndex>
+			</contextitem>
+			<contextitem>
+				<id>06276af0-da68-11e7-8f1a-0800200c9a66</id>
+				<logId>5dc8b210-da67-11e7-8f1a-0800200c9a66</logId>
+				<name>SessionKey</name>
+				<type>String</type>
+				<paraIndex>3</paraIndex>
 			</contextitem>
 		</context>
 	</graph>

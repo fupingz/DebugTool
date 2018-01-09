@@ -84,11 +84,7 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         private bool MatchFilter(Log log) 
         {
-            string[] filterProperties = this.value.Split(':');
-
-            string filterValue= filterProperties[1];
-
-            if (log.Text.IndexOf(filterValue) >= 0)
+            if (log.Text.IndexOf(this.value) >= 0)
             {
                 return true;
             }

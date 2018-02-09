@@ -525,7 +525,7 @@ namespace DataBaseHelper
             {
                 GetSimilarIssue3();
             }
-            catch 
+            catch(Exception ex)
             {
                 Console.WriteLine("get issue failed" + "\n");
             }

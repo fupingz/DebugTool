@@ -17,9 +17,9 @@ namespace CitrixAutoAnalysis.pattern
             bool MatchSeg = instance.ChildNodes.Count == this.ChildNodes.Count;
             bool MatchLog = instance.LogInCurrent().Count == this.LogInCurrent().Count;
             bool MatchContext = instance.ContextInCurrent().Count == this.ContextInCurrent().Count;// we may need to do some further validation regarding the context value
-            bool NoError = instance.LogInCurrent().Any(l => l.IsForDebug) && instance.LogInCurrent().Any(l => l.IsBreakPoint);
+            bool AnyErrors = instance.LogInCurrent().Any(l => l.IsForDebug) || instance.LogInCurrent().Any(l => l.IsBreakPoint);
 
-            return MatchSeg && MatchLog && MatchContext && NoError;
+            return MatchSeg && MatchLog && MatchContext && !AnyErrors;
         }
 
         public override string ToXml()

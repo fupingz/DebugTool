@@ -1,0 +1,297 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pattern>
+  <id>e6e29dac-094f-45b4-b4f6-074363c595f6</id>
+  <name>Seamless Initialization</name>
+  <productName>XenDesktop</productName>
+  <productVersion>7.15</productVersion>
+  <hotfixLevel>RTM</hotfixLevel>
+  <graph>
+    <segments>
+      <segment>
+        <id>b0dc9929-088e-4519-a2b0-517589b52a57</id>
+        <index>1</index>
+        <name>Seamless Startup</name>
+        <log>
+          <id>9cb70c40-5c7f-4af7-baa0-0277e0a461b8</id>
+          <id>8384e9c3-03a2-46d4-85f1-10bbdd843f34</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>edf8a139-713b-4afe-9468-1176ef6a9cab</id>
+        <index>2</index>
+        <name>TWI Loading</name>
+        <log>
+          <id>dfc06ff3-9bcd-4b70-ba56-4b0f41d8bb58</id>
+          <id>e228afc8-e436-43f1-b007-dd9fac5fe24e</id>
+          <id>a6216763-a767-4f2d-bda0-66125fa5b466</id>
+          <id>cb95b1f4-acc3-4a86-98ea-b7b842be9a95</id>
+          <id>968fb780-c56c-4e88-bc26-838c76de35a4</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>9825cdcf-1e9d-4a67-b993-fa72825833ff</id>
+        <index>3</index>
+        <name>TWI Activation</name>
+        <log>
+          <id>f054376b-1536-4d95-97e3-aa40a50a964d</id>
+          <id>841436a3-b39c-4f1a-b35d-523adb5baf96</id>
+          <id>4e5dabe2-c79e-4175-ab40-8c57c9922f01</id>
+          <id>85ae1782-3601-4e4a-a9f3-634a2abad901</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+    </segments>
+    <log>
+      <logitem>
+        <id>9cb70c40-5c7f-4af7-baa0-0277e0a461b8</id>
+        <index>1</index>
+        <indexInTrace>1</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>seamls20.c</src>
+        <func>twi_start</func>
+        <line>151</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>5976</threadId>
+        <text>twi_start: Entry [ hInstance=*#_PARAM_INDEX_1]</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>8384e9c3-03a2-46d4-85f1-10bbdd843f34</id>
+        <index>2</index>
+        <indexInTrace>2</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>seamls20.c</src>
+        <func>twi_start</func>
+        <line>196</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>5976</threadId>
+        <text>twi_start: Session type is *#_PARAM_INDEX_1.</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+          <id>86cc38a2-1a66-4652-a568-cd13f54b2791</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>dfc06ff3-9bcd-4b70-ba56-4b0f41d8bb58</id>
+        <index>1</index>
+        <indexInTrace>1</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>twi.c</src>
+        <func>TWILoad</func>
+        <line>6166</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>TWILoad: &gt;&gt;&gt; [ nThreadID=*#_PARAM_INDEX_1 ]</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>e228afc8-e436-43f1-b007-dd9fac5fe24e</id>
+        <index>2</index>
+        <indexInTrace>4588</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>ICASession.cpp</src>
+        <func>IsICASession</func>
+        <line>63</line>
+        <module>lib</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>IsICASession: &lt;&lt;&lt; *#_PARAM_INDEX_1 [ SessionProtocol=*#_PARAM_INDEX_2 ]</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+          <id>ba4bc743-44cd-4f40-93ae-5e02392555c8</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>a6216763-a767-4f2d-bda0-66125fa5b466</id>
+        <index>3</index>
+        <indexInTrace>4590</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>ICASession.cpp</src>
+        <func>IsSeamless</func>
+        <line>132</line>
+        <module>lib</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>IsSeamless: &lt;&lt;&lt; *#_PARAM_INDEX_1 [ SessionID=*#_PARAM_INDEX_2, UIModule[ VersionH=*#_PARAM_INDEX_3, Flags=*#_PARAM_INDEX_4 ] ]</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+          <id>313347f7-57e5-43f6-bdd7-d2d51e6d8b4b</id>
+          <id>135dbac8-1d35-412e-a32c-2a97c03d24c1</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>cb95b1f4-acc3-4a86-98ea-b7b842be9a95</id>
+        <index>4</index>
+        <indexInTrace>4591</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>ICASession.cpp</src>
+        <func>IsPublishedApplication</func>
+        <line>178</line>
+        <module>lib</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>IsPublishedApplication: &lt;&lt;&lt; *#_PARAM_INDEX_1 [ SessionID=*#_PARAM_INDEX_2 ]</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+          <id>05b4a20e-04a5-4ffc-9cce-60080ab0123e</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>968fb780-c56c-4e88-bc26-838c76de35a4</id>
+        <index>5</index>
+        <indexInTrace>4604</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>TWIClass.cpp</src>
+        <func>CTWI::SessionBegin</func>
+        <line>384</line>
+        <module>lib</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>CTWI::SessionBegin: &lt;&lt;&lt; *#_PARAM_INDEX_1 *#_PARAM_INDEX_2</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+          <id>a1443c21-ee8b-4c20-9cb8-956b2daccf99</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>f054376b-1536-4d95-97e3-aa40a50a964d</id>
+        <index>1</index>
+        <indexInTrace>4609</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>twi.c</src>
+        <func>_TWI_Activate</func>
+        <line>832</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>_TWI_Activate: &gt;&gt;&gt; [ hInstance=*#_PARAM_INDEX_1, hWindowShell=*#_PARAM_INDEX_2 ]</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>841436a3-b39c-4f1a-b35d-523adb5baf96</id>
+        <index>2</index>
+        <indexInTrace>4616</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>twi.c</src>
+        <func>_TWI_Activate</func>
+        <line>982</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>_TWI_Activate: Opening the TWI virtual channel...</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>4e5dabe2-c79e-4175-ab40-8c57c9922f01</id>
+        <index>3</index>
+        <indexInTrace>4617</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>CpsVirtual.cpp</src>
+        <func>CtxWSVirtualChannelOpen</func>
+        <line>84</line>
+        <module>cps</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>CtxWSVirtualChannelOpen: Server Handle:*#_PARAM_INDEX_1, SessionId:*#_PARAM_INDEX_2 , pVirtualName=*#_PARAM_INDEX_3</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+          <id>07f59a8f-4b7d-4653-9193-bb3584ce058c</id>
+        </context>
+      </logitem>
+      <logitem>
+        <id>85ae1782-3601-4e4a-a9f3-634a2abad901</id>
+        <index>4</index>
+        <indexInTrace>4814</indexInTrace>
+        <time>3/20/2018 4:22:06 PM</time>
+        <src>twi.c</src>
+        <func>TWILoad</func>
+        <line>6193</line>
+        <module>twi_main</module>
+        <sessionId>5</sessionId>
+        <processId>2808</processId>
+        <threadId>6032</threadId>
+        <text>TWILoad Activated, begining main message loop... [ nThreadID=*#_PARAM_INDEX_1 ]</text>
+        <RelationWithPrevious>SameThread</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+    </log>
+    <context>
+      <contextitem>
+        <id>86cc38a2-1a66-4652-a568-cd13f54b2791</id>
+        <logId>8384e9c3-03a2-46d4-85f1-10bbdd843f34</logId>
+        <name>SessionType</name>
+        <type>String</type>
+        <paraIndex>1</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>ba4bc743-44cd-4f40-93ae-5e02392555c8</id>
+        <logId>e228afc8-e436-43f1-b007-dd9fac5fe24e</logId>
+        <name>IsIcaSession</name>
+        <type>Assertion:TRUE</type>
+        <paraIndex>1</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>313347f7-57e5-43f6-bdd7-d2d51e6d8b4b</id>
+        <logId>a6216763-a767-4f2d-bda0-66125fa5b466</logId>
+        <name>IsSeamless</name>
+        <type>Assertion:TRUE</type>
+        <paraIndex>1</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>135dbac8-1d35-412e-a32c-2a97c03d24c1</id>
+        <logId>a6216763-a767-4f2d-bda0-66125fa5b466</logId>
+        <name>SessionId</name>
+        <type>Integer</type>
+        <paraIndex>2</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>05b4a20e-04a5-4ffc-9cce-60080ab0123e</id>
+        <logId>cb95b1f4-acc3-4a86-98ea-b7b842be9a95</logId>
+        <name>IsAppSession</name>
+        <type>Bool</type>
+        <paraIndex>1</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>a1443c21-ee8b-4c20-9cb8-956b2daccf99</id>
+        <logId>968fb780-c56c-4e88-bc26-838c76de35a4</logId>
+        <name>SessionBeginResult</name>
+        <type>Assertion:SUCCESS</type>
+        <paraIndex>1</paraIndex>
+      </contextitem>
+      <contextitem>
+        <id>07f59a8f-4b7d-4653-9193-bb3584ce058c</id>
+        <logId>4e5dabe2-c79e-4175-ab40-8c57c9922f01</logId>
+        <name>SeamlessVCName</name>
+        <type>String</type>
+        <paraIndex>3</paraIndex>
+      </contextitem>
+    </context>
+  </graph>
+</pattern>

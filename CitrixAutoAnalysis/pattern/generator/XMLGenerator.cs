@@ -87,7 +87,7 @@ namespace CitrixAutoAnalysis.pattern.generator
                                            Convert.ToInt32(elements[4]),     //processId
                                            Convert.ToInt32(elements[3]),     //threadId
                                            Convert.ToDateTime(elements[2].Substring(0, elements[2].LastIndexOf(":"))), //capturedTime
-                                           0, 0, RelationWithPrevious.Unknown); //index in trace
+                                           0, 0, 0, RelationWithPrevious.Unknown); //index in trace
 
                 segment.AddChildNode(item);
             }

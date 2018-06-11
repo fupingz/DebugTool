@@ -55,7 +55,7 @@ namespace CitrixAutoAnalysis.pattern
             foreach (XElement ele in logs)
             {
                 //we are adding a fake log item here, will fill in the info when log item is parsed from xml
-                seg.AddChildNode(new Log(Guid.Parse(ele.Value), seg, "","","",0,"",0,0,0,DateTime.Now,index, 0, RelationWithPrevious.Unknown));
+                seg.AddChildNode(new Log(Guid.Parse(ele.Value), seg, "","","",0,"",0,0,0,DateTime.Now,index, 0, 0, RelationWithPrevious.Unknown));
             }
 
             foreach (XElement ele in connSegs)

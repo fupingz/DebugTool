@@ -4,3 +4,9 @@ C:\Github\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.pdb
 C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.exe
 C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.pdb
 C:\Github\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.csprojResolveAssemblyReference.cache
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.exe.config
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.exe
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.pdb
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\obj\Release\CitrixAutoAnalysis.csprojResolveAssemblyReference.cache
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.exe
+D:\tools db\DebugTool-june-7\DebugTool\CitrixAutoAnalysis\bin\Release\CitrixAutoAnalysis.pdb

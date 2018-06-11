@@ -18,8 +18,8 @@ namespace CitrixAutoAnalysis.pattern
         private int sessionId;
         private int processId;
         private int threadId;
-        private int indexInTrace; // the index of the log in the captured trace, so we know where it is in the trace file.
-
+        private int indexInTrace; // the ID of the log in the captured trace, so we know where it is in the trace file.
+        private int indexInResult; //the index in the filtered log set, which will be used as the index for the engine
         private DateTime capturedTime;
 
         private HashSet<Log> equivalents; //  a set of equivalent logs cross different version, they may have different line number, but they are the same
@@ -40,7 +40,7 @@ namespace CitrixAutoAnalysis.pattern
         private static string ParamMagic = @"*#_PARAM_INDEX_";
 
 
-        public Log(Guid id, Segment prnt, string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime, int indexInParent, int indexInTrace, RelationWithPrevious Rwp)
+        public Log(Guid id, Segment prnt, string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime, int indexInParent, int indexInTrace, int indexInResult, RelationWithPrevious Rwp)
             : base(id, prnt, "", indexInParent)
             //normally we don't have a name for a log item
             // under the normal location where Log object is instantiated(read from db), we don't know the index, so setting it to 0
@@ -58,7 +58,7 @@ namespace CitrixAutoAnalysis.pattern
             this.capturedTime = CapturedTime;
 
             this.indexInTrace = indexInTrace;
-
+            this.indexInResult = indexInResult;
             this.rwp = Rwp;
         }
 
@@ -145,7 +145,7 @@ namespace CitrixAutoAnalysis.pattern
 
             Log log = new Log(Guid.Parse(id), null, module, src, func, Convert.ToInt32(line), text,
                               Convert.ToInt32(sessionId), Convert.ToInt32(processId), Convert.ToInt32(threadId),
-                              DateTime.Parse(time), Convert.ToInt32(index), 0, LogRelationConverter.StringToLogRelation(rwp));
+                              DateTime.Parse(time), Convert.ToInt32(index), 0, 0, LogRelationConverter.StringToLogRelation(rwp));
 
             List<Guid> contextIds = new List<Guid>();
             element.Descendants("context").Descendants("id").ToList().ForEach(e => log.AddChildNode(new Context(Guid.Parse(e.Value), log, "","",0,ContextType.Unknown)));
@@ -284,6 +284,12 @@ namespace CitrixAutoAnalysis.pattern
         {
             get { return indexInTrace; }
             set { indexInTrace = value; }
+        }
+
+        public int IndexInResult
+        {
+            get { return indexInResult; }
+            set { indexInResult = value; }
         }
 
         public RelationWithPrevious RWP {

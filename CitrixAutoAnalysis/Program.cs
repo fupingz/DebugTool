@@ -13,6 +13,24 @@ namespace CitrixAutoAnalysis
 {
     class Program
     {
+        //**************************uncomment this to enable local debug
+        //public static void Main()
+        //{
+        //    try
+        //    {
+        //        Thread resultAnalyzerThread = new Thread(new ThreadStart(ResultAnalzerThread));
+        //        resultAnalyzerThread.Start();
+
+        //        Thread traceAnalyzerThread = new Thread(new ThreadStart(TraceAnalyzerThread));
+        //        traceAnalyzerThread.Start();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        System.Diagnostics.Trace.WriteLine(ex.ToString());
+        //    }
+
+        //}
+
         public static void Start()
         {
             try
@@ -27,7 +45,13 @@ namespace CitrixAutoAnalysis
             {
                 System.Diagnostics.Trace.WriteLine(ex.ToString());
             }
- 
+
+        }
+
+        public static void Stop()
+        {
+            JobScheduler.StopService();
+            DataBaseHelper.DataBaseHelper2.Instance.StopTimerThread();
         }
 
         static private void ResultAnalzerThread()
@@ -44,5 +68,7 @@ namespace CitrixAutoAnalysis
             //CitrixAutoAnalysis.Pattern.Pattern.FromXml("C:\\cdfxml.xml");
             JobScheduler.ScheduleJobs();
         }
+
+
     }
 }

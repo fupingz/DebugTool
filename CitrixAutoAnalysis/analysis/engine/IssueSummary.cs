@@ -28,9 +28,14 @@ namespace CitrixAutoAnalysis.analysis.engine
             this.jobId = job;
             this.name = name;
             this.lcId = lc;
-
+            this.keyWords = "";
             foreach (string word in words)
-                this.keyWords += word + "#";
+            {
+                if(this.keyWords.Length+word.Length <= 100)
+                       this.keyWords += word + "#";//keywords are hardcoded in database to be within 100. normall this would be find, but GroupPolicy has very long func names
+                else
+                    break;
+            }
         }
 
         public void OutputIssueToDB()

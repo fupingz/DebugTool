@@ -37,6 +37,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -45,11 +46,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="analysis\analyzers\ErrorAndExceptionAnalyzer.cs" />
     <Compile Include="analysis\engine\CDFFilter.cs" />
     <Compile Include="analysis\engine\CDFCondition.cs" />
     <Compile Include="analysis\engine\CDFHelper.cs" />
     <Compile Include="analysis\engine\IssueSummary.cs" />
     <Compile Include="analysis\engine\MileStoneEngine.cs" />
+    <Compile Include="analysis\engine\NoAppropriateTraecFoundException.cs" />
     <Compile Include="analysis\engine\TopDownEngine.cs" />
     <Compile Include="analysis\io\DBHelper.cs" />
     <Compile Include="analysis\scheduler\Job.cs" />

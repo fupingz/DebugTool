@@ -66,7 +66,7 @@ namespace CitrixAutoAnalysis.pattern
 
         public override string ConstructSql()
         {
-            return "insert into PatternTable values('"+this.NodeId+"','"+this.NodeName+"','"+this.ProductVersion.ProductName+"','"+this.ProductVersion.Version+"','"+this.ProductVersion.HotfixLevel+"',"+(this.IsIssuePattern ? 1:0)+")";
+            return "insert into PatternTable values('"+this.NodeId+"','"+this.NodeName+"','"+this.ProductVersion.ProductName+"','"+this.ProductVersion.Version+"','"+this.ProductVersion.HotfixLevel+"',"+(this.IsIssuePattern ? 1:0)+",null)";
         }
 
         public HashSet<string> GetAllModules()

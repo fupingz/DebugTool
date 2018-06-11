@@ -22,7 +22,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             List<Log> segLogs = segment.LogInCurrent().OrderBy(i => i.IndexInParent).ToList();
             List<AbstractNode> nodes = new List<AbstractNode>();
 
-            for (int index = 0; index < segLogs.Count; index++ )
+            for (int index = 0; index < segLogs.Count && index < 3; index++)
             {
                 //all the logs that matches the first item in the segment
                 List<Log> first = GetAllMatchingLog(segLogs[index], helper);
@@ -154,6 +154,11 @@ namespace CitrixAutoAnalysis.analysis.engine
             log.ContextInCurrent().Where(con => con.ContextType == ContextType.ContextFilter).ToList().ForEach(con => filters.Add(new CDFFilter(CDFCondition.CDF_FILTER, con.Assertion)));
 
             filters.Add(filter);
+
+            if (log.Func != null && log.Func.Length > 0)
+            {
+                filters.Add(new CDFFilter(CDFCondition.CDF_FUNC, log.Func));
+            }
 
             return helper.GetAllByFiltersInRange(filters);
         }

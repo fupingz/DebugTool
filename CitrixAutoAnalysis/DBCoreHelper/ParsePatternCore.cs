@@ -269,7 +269,7 @@ namespace CitrixAutoAnalysis.ParsePatern
                 string Text = dr["Text"].ToString();
                 int IndexInSeg = Int32.Parse(dr["IndexInSegment"].ToString());
                 int IndexInTrace = Int32.Parse(dr["IndexInTrace"].ToString());
-                Log node = new Log(NodeId, null, Module, Src, Func, Line, Text, SessionId, ProcessId, ThreadId, CapturedTime, IndexInSeg, IndexInTrace, RelationWithPrevious.Unknown);
+                Log node = new Log(NodeId, null, Module, Src, Func, Line, Text, SessionId, ProcessId, ThreadId, CapturedTime, IndexInSeg, IndexInTrace, 0, RelationWithPrevious.Unknown);
                     
                 //node.RelationWithPrevious = dr["RelationWithPrevious"];
                 List<Context> conts = getContextFromDB(node);

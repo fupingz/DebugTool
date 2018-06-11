@@ -15,7 +15,7 @@ namespace CitrixAutoAnalysis
         /// </summary>
         public WindowsService()
         {
-            this.ServiceName = "Citrix CAD Engine Service";
+            this.ServiceName = "Citrix CAD Engine Service 1.1";
             this.EventLog.Log = "Application";
 
             // These Flags set whether or not to handle that specific
@@ -27,6 +27,7 @@ namespace CitrixAutoAnalysis
             this.CanStop = true;
         }
 
+        //Comment this to enable local debug
         /// <summary>
         /// The Main Thread: This is where your Service is Run.
         /// </summary>
@@ -64,6 +65,7 @@ namespace CitrixAutoAnalysis
         /// </summary>
         protected override void OnStop()
         {
+            Program.Stop();
             base.OnStop();
         }
 

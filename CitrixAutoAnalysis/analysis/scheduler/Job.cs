@@ -114,9 +114,9 @@ namespace CitrixAutoAnalysis.analysis.scheduler
             }
         }
 
-        public void UpdateJobFailedInfo()
+        public void UpdateJobFailedInfo(string message)
         {
-            string SqlString = "update CadJobs set StatusId = " + (int)JobStatus.JOB_STATUS_FAILED + ",AnalyzeEndTime = SYSDATETIMEOFFSET() where id = " + this.JobId;
+            string SqlString = "update CadJobs set StatusId = " + (int)JobStatus.JOB_STATUS_FAILED + ",AnalyzeEndTime = SYSDATETIMEOFFSET(), StatusMsg = '"+message+"' where id = " + this.JobId;
 
             using (DBHelper helper = new DBHelper())
             {
@@ -146,6 +146,6 @@ namespace CitrixAutoAnalysis.analysis.scheduler
         JOB_STATUS_READY_FOR_ANSLYSIS,
         JOB_STATUS_IN_ANALYZING,
         JOB_STATUS_FINISHED,
-        JOB_STATUS_FAILED
+        JOB_STATUS_FAILED = 99
     }
 }

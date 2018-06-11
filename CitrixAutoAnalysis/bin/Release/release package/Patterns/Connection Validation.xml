@@ -1,0 +1,566 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<pattern>
+  <id>e84da8eb-c1f4-4002-a06c-88b52d5eb31b</id>
+  <name>app_validate_VDA_715</name>
+  <productName>XenDesktop</productName>
+  <productVersion>7.15</productVersion>
+  <hotfixLevel>RTM</hotfixLevel>
+  <graph>
+    <segments>
+      <segment>
+        <id>a418ff20-4fac-45ae-99b2-d98e44ca28e5</id>
+        <index>1</index>
+        <name>ValidateConnection-Entry</name>
+        <log>
+          <id>8c90954b-0a1a-4b75-807f-e75b656a4b9a</id>
+          <id>fa9fe6e3-a19c-4533-ba52-134944676fe8</id>
+          <id>1a3529f4-cb46-42ab-ab09-a2afaca8fffd</id>
+          <id>cf0ae009-5d48-480d-8521-7e911a958097</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>e92283b4-2336-4134-adc9-df8962807ddc</id>
+        <index>2</index>
+        <name>ValidateConnection-Agent</name>
+        <log>
+          <id>04b9c9a8-b056-4e35-a402-c329f9b5f2a9</id>
+          <id>7154bec7-b684-4a99-bc21-9f81175c6532</id>
+          <id>6b822ac3-7b45-42d1-837b-ebd9a9aaa048</id>
+          <id>10fbbfcf-9602-44ca-8bf2-d00985e5c1f3</id>
+          <id>8cbb6550-8a20-4491-9ed9-0df93e84d3b7</id>
+          <id>0b4bf4fe-ce49-4b43-a128-b249c96a7ddc</id>
+          <id>db42a003-b031-4fa3-bfdf-e8ab4a47ab61</id>
+          <id>c903cfaf-9f12-4c56-8820-0dce6fceda90</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>be606bb4-cc39-4286-95e5-14621e3161bc</id>
+        <index>3</index>
+        <name>ValidateConnection-Exit</name>
+        <log>
+          <id>ac067543-20e3-4b50-8ff7-bc98fff8ea54</id>
+          <id>b3b8dd31-5f60-462f-af66-3237eef52453</id>
+          <id>ca20bc3e-1054-4a0f-86a5-c330e575101f</id>
+          <id>51f8ebdc-7286-4f27-8f34-4992ce9662dd</id>
+          <id>e4363ab1-d34e-4ad7-8db7-02389b6f90fc</id>
+          <id>8c32d981-7dab-4118-a025-8e6631496ff8</id>
+          <id>4b2a8de3-f6e7-4542-966f-ac57753569b2</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>dd2b6a3f-6ed4-4560-a2fc-38b78ce53eab</id>
+        <index>4</index>
+        <name>ValidateApp-Agent</name>
+        <log>
+          <id>21d40df1-8694-41b6-bd8b-3ddf132b5f1e</id>
+          <id>23966d1f-aabd-4efe-b291-04f90f092e67</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+      <segment>
+        <id>5f4dc8b9-e581-435d-83a0-80ff0538c7bb</id>
+        <index>5</index>
+        <name>ValidatePublishedApp</name>
+        <log>
+          <id>0b2fb30c-c3fd-4cfb-89a7-d296473551b4</id>
+          <id>b3266e5b-137b-4d4e-bdee-7909fe36b32b</id>
+          <id>3890e650-81c9-4b3c-acc7-0318ce571c53</id>
+          <id>6c24b0e4-3f2f-4c60-8158-a810c190c47e</id>
+          <id>05b4ed2d-9f95-49ea-a711-8c87110dcd6d</id>
+          <id>c9994166-5db6-4766-b627-c468b3ab8154</id>
+          <id>4263056c-8411-49a3-8532-0c079607a7d3</id>
+          <id>352bf393-afcb-418b-8cef-69a57aca7a32</id>
+        </log>
+        <connectedSegments>
+        </connectedSegments>
+      </segment>
+    </segments>
+    <log>
+      <logitem>
+        <id>8c90954b-0a1a-4b75-807f-e75b656a4b9a</id>
+        <index>1</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>Wrappers.cpp</src>
+        <func>Wrap_StackControl_ValidateConnection</func>
+        <line>1268</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>Wrap_StackControl_ValidateConnection: ENTRY</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>fa9fe6e3-a19c-4533-ba52-134944676fe8</id>
+        <index>2</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_client.c</src>
+        <func>StackControl_ValidateConnection3</func>
+        <line>2006</line>
+        <module>client</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>"StackControl_ValidateConnection3 - Entered. ClientAddressType=*#_PARAM_INDEX_1, ClientAddress=*#_PARAM_INDEX_2, ClientHardwareID=*#_PARAM_INDEX_3, ClientName=*#_PARAM_INDEX_4, BrowserName=*#_PARAM_INDEX_5, UserSid=*#_PARAM_INDEX_6, Protocol=*#_PARAM_INDEX_7"</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>1a3529f4-cb46-42ab-ab09-a2afaca8fffd</id>
+        <index>3</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_rpc.cpp</src>
+        <func>RpcStackControl_ValidateConnection3</func>
+        <line>1589</line>
+        <module>server</module>
+        <sessionId>0</sessionId>
+        <processId>2872</processId>
+        <threadId>2720</threadId>
+        <text>RpcStackControl_ValidateConnection3 - calling StackControl_Validate</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>cf0ae009-5d48-480d-8521-7e911a958097</id>
+        <index>4</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_StackControl.cpp</src>
+        <func>ImaMfRpc::StackControl_ValidateConnection3</func>
+        <line>414</line>
+        <module>server</module>
+        <sessionId>0</sessionId>
+        <processId>2872</processId>
+        <threadId>2720</threadId>
+        <text>"ImaMfRpc::StackControl_ValidateConnection3 - Entered.  ClientAddressType=*#_PARAM_INDEX_1, ClientAddress=*#_PARAM_INDEX_2, ClientHardwareID=*#_PARAM_INDEX_3, ClientName=*#_PARAM_INDEX_4, BrowserName=*#_PARAM_INDEX_5, UserSid=*#_PARAM_INDEX_6, Protocol=*#_PARAM_INDEX_7, RdsCalId=*#_PARAM_INDEX_8"</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>04b9c9a8-b056-4e35-a402-c329f9b5f2a9</id>
+        <index>1</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>=========&gt;&gt;&gt;&gt;&gt; StackManager.ValidateConnection3: Enter</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>7154bec7-b684-4a99-bc21-9f81175c6532</id>
+        <index>2</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>"=========&gt;&gt;&gt;&gt;&gt; LaunchManager.ValidateConnection: Connection Protocol: *#_PARAM_INDEX_1, Session Key: *#_PARAM_INDEX_2"</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>6b822ac3-7b45-42d1-837b-ebd9a9aaa048</id>
+        <index>3</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>PluginManager.NotifyValidateSessionEvent(*#_PARAM_INDEX_1): Entry</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>10fbbfcf-9602-44ca-8bf2-d00985e5c1f3</id>
+        <index>4</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>PluginManager.NotifyValidateSessionEvent(*#_PARAM_INDEX_1): Exit</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>8cbb6550-8a20-4491-9ed9-0df93e84d3b7</id>
+        <index>5</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>"LaunchManager.ProcessValidationResponse: Exit, Domain: *#_PARAM_INDEX_1, Client: *#_PARAM_INDEX_2, IsReconnect: *#_PARAM_INDEX_3, IsValidated: *#_PARAM_INDEX_4"</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>0b4bf4fe-ce49-4b43-a128-b249c96a7ddc</id>
+        <index>6</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>LaunchManager.ValidateConnection: Exit(Validated:*#_PARAM_INDEX_1)</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>db42a003-b031-4fa3-bfdf-e8ab4a47ab61</id>
+        <index>7</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>"StackManager.ValidateConnection3: Reply Domain: *#_PARAM_INDEX_1, User Name: *#_PARAM_INDEX_2, CredentialsType: *#_PARAM_INDEX_3"</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>c903cfaf-9f12-4c56-8820-0dce6fceda90</id>
+        <index>8</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>"StackManager.ValidateConnection3: Exit(Result:*#_PARAM_INDEX_1, SessionKey:*#_PARAM_INDEX_2)"</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>ac067543-20e3-4b50-8ff7-bc98fff8ea54</id>
+        <index>1</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_StackControl.cpp</src>
+        <func>ImaMfRpc::StackControl_ValidateConnection3</func>
+        <line>503</line>
+        <module>server</module>
+        <sessionId>0</sessionId>
+        <processId>2872</processId>
+        <threadId>2720</threadId>
+        <text>ImaMfRpc::StackControl_ValidateConnection3 - Call to ValidateConnection succeeded</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>b3b8dd31-5f60-462f-af66-3237eef52453</id>
+        <index>2</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_StackControl.cpp</src>
+        <func>ImaMfRpc::StackControl_ValidateConnection3</func>
+        <line>608</line>
+        <module>server</module>
+        <sessionId>0</sessionId>
+        <processId>2872</processId>
+        <threadId>2720</threadId>
+        <text>"ImaMfRpc::StackControl_ValidateConnection3 - Exiting. hResult = *#_PARAM_INDEX_1, SessionKey=*#_PARAM_INDEX_2, Domain=*#_PARAM_INDEX_3, User=*#_PARAM_INDEX_4, IsReconnect=*#_PARAM_INDEX_5, LicenseMessage=*#_PARAM_INDEX_6, LicenseMessageTitle=*#_PARAM_INDEX_7, ValidateResult=*#_PARAM_INDEX_8, EncryptionLevel=*#_PARAM_INDEX_9"</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>ca20bc3e-1054-4a0f-86a5-c330e575101f</id>
+        <index>3</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_rpc.cpp</src>
+        <func>RpcStackControl_ValidateConnection3</func>
+        <line>1729</line>
+        <module>server</module>
+        <sessionId>0</sessionId>
+        <processId>2872</processId>
+        <threadId>2720</threadId>
+        <text>"RpcStackControl_ValidateConnection3 - Exiting. Returning RetVal=*#_PARAM_INDEX_1, Domain=*#_PARAM_INDEX_2, User=*#_PARAM_INDEX_3, EncryptionLevel=*#_PARAM_INDEX_4, EncryptedPasswordLength=*#_PARAM_INDEX_5, RdsCalLength=*#_PARAM_INDEX_6, IsReconnect=*#_PARAM_INDEX_7, ValidateResult=*#_PARAM_INDEX_8, LicenseTitle=*#_PARAM_INDEX_9, LicenseMessage=*#_PARAM_INDEX_10"</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>51f8ebdc-7286-4f27-8f34-4992ce9662dd</id>
+        <index>4</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>IMAMfRpc_client.c</src>
+        <func>StackControl_ValidateConnection3</func>
+        <line>2077</line>
+        <module>client</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>StackControl_ValidateConnection3 - Exiting.  result=*#_PARAM_INDEX_1</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>e4363ab1-d34e-4ad7-8db7-02389b6f90fc</id>
+        <index>5</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>Wrappers.cpp</src>
+        <func>Wrap_StackControl_ValidateConnection</func>
+        <line>1362</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>Wrap_StackControl_ValidateConnection: StackControl_ValidateConnection = *#_PARAM_INDEX_1</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>8c32d981-7dab-4118-a025-8e6631496ff8</id>
+        <index>6</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>Wrappers.cpp</src>
+        <func>Wrap_StackControl_ValidateConnection</func>
+        <line>1429</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>Wrap_StackControl_ValidateConnection: Session GUID  -  *#_PARAM_INDEX_1  Reconnect session *#_PARAM_INDEX_2Linger Session *#_PARAM_INDEX_3</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>4b2a8de3-f6e7-4542-966f-ac57753569b2</id>
+        <index>7</index>
+        <time>2/5/2018 12:44:24 AM</time>
+        <src>Wrappers.cpp</src>
+        <func>Wrap_StackControl_ValidateConnection</func>
+        <line>1435</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>5076</threadId>
+        <text>Wrap_StackControl_ValidateConnection: EXIT</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>21d40df1-8694-41b6-bd8b-3ddf132b5f1e</id>
+        <index>1</index>
+        <time>2/5/2018 12:44:25 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>LaunchManager.ValidateApp: Enter(BrowserName:'*#_PARAM_INDEX_1')</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>23966d1f-aabd-4efe-b291-04f90f092e67</id>
+        <index>2</index>
+        <time>2/5/2018 12:44:25 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>4832</threadId>
+        <text>"LaunchManager.ValidateApp: Exit(BrowserName:'*#_PARAM_INDEX_1', Result:*#_PARAM_INDEX_2)"</text>
+        <RelationWithPrevious>SameProcess</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>0b2fb30c-c3fd-4cfb-89a7-d296473551b4</id>
+        <index>1</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>ConnectionLogonAllowed.cpp</src>
+        <func>ctx::Connection::IsUserAllowedToLogon</func>
+        <line>203</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>ctx::Connection::IsUserAllowedToLogon: Calling ValidatePublishedApplication</text>
+        <RelationWithPrevious>First</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>b3266e5b-137b-4d4e-bdee-7909fe36b32b</id>
+        <index>2</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>CtxLog.cpp</src>
+        <func>ctx::CtxLog::CtxLog</func>
+        <line>17</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>ENTRY ---- ctx::Session::ValidatePublishedApplication</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>3890e650-81c9-4b3c-acc7-0318ce571c53</id>
+        <index>3</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>CtxLog.cpp</src>
+        <func>ctx::CtxLog::CtxLog</func>
+        <line>17</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>ENTRY ---- ctx::CPublishedApp::ValidatePublishedApp</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>6c24b0e4-3f2f-4c60-8158-a810c190c47e</id>
+        <index>4</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>5720</threadId>
+        <text>LaunchManager.ValidateApp: Enter(BrowserName:'*#_PARAM_INDEX_1')</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>05b4ed2d-9f95-49ea-a711-8c87110dcd6d</id>
+        <index>5</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>_#dotNet#_</src>
+        <func>
+        </func>
+        <line>0</line>
+        <module>BrokerAgent</module>
+        <sessionId>0</sessionId>
+        <processId>1208</processId>
+        <threadId>5720</threadId>
+        <text>"LaunchManager.ValidateApp: Exit(BrowserName:'*#_PARAM_INDEX_1', Result:*#_PARAM_INDEX_2)"</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>c9994166-5db6-4766-b627-c468b3ab8154</id>
+        <index>6</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>PublishedApp.cpp</src>
+        <func>ctx::CPublishedApp::ValidatePublishedApp</func>
+        <line>550</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>ctx::CPublishedApp::ValidatePublishedApp: returning *#_PARAM_INDEX_1</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>4263056c-8411-49a3-8532-0c079607a7d3</id>
+        <index>7</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>CtxLog.cpp</src>
+        <func>ctx::CtxLog::~CtxLog</func>
+        <line>22</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>EXIT ---- ctx::CPublishedApp::ValidatePublishedApp</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+      <logitem>
+        <id>352bf393-afcb-418b-8cef-69a57aca7a32</id>
+        <index>8</index>
+        <time>2/5/2018 12:44:27 AM</time>
+        <src>CtxLog.cpp</src>
+        <func>ctx::CtxLog::~CtxLog</func>
+        <line>22</line>
+        <module>RPM</module>
+        <sessionId>0</sessionId>
+        <processId>2932</processId>
+        <threadId>1348</threadId>
+        <text>EXIT ---- ctx::Session::ValidatePublishedApplication</text>
+        <RelationWithPrevious>SameSession</RelationWithPrevious>
+        <context>
+        </context>
+      </logitem>
+    </log>
+    <context>
+    </context>
+  </graph>
+</pattern>

@@ -13,7 +13,7 @@ namespace CitrixAutoAnalysis.analysis.io
 {
     class DBHelper :IDisposable
     {
-        private static string ConnectionString = @"Data Source=10.150.143.83;Initial Catalog=cse_auto_debugger;User ID=cad_admin;Password=njlcm@2017";
+        private static string ConnectionString = @"Data Source=10.150.154.25;Initial Catalog=cse_auto_debugger;User ID=cad_admin;Password=njlcm@2017";
 
         private SqlConnection conn = null;
 

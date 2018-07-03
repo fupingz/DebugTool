@@ -397,6 +397,34 @@ namespace DataBaseHelper
             return ret;
         }
 
+        public int GetDescriptionFromJob(int JobID, out string IssueDescription)
+        {
+            int ret = 1;
+            string Description = "";
+            string cmd = "select *" + " from " + CADTABLENAME + " where " + " ID = \'" + JobID + "\'";
+
+            SqlCommand sqlCmd = new SqlCommand(cmd, conn);
+            using (var reader = sqlCmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    try
+                    {
+                        Description = (string)reader["Description"];
+                        //              Console.WriteLine("Description : " + Description);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Get Job: " + JobID + "description failed" + "\n"); 
+                        ret = 0;
+                    }
+
+                }
+            }
+            IssueDescription = Description;
+            return ret;
+        }
+
         public void GetSimilarCaseFromElasticSearch()
         {
             string cmd = "select *" + " from " + CADISSUESTABLENAME + " where IssueProcessed = \'0\'";
@@ -404,7 +432,8 @@ namespace DataBaseHelper
             string IntermediateResult = "";
             int ID = 0;
             string LCID = "";
-      
+            int JobID = 0;
+
             string IssueTitle = "";
             string IssueComponent = "";
             string IssueDescription = "";
@@ -437,19 +466,38 @@ namespace DataBaseHelper
                         Console.WriteLine("Get LCID Failed" + "\n");
                         continue;
                     }
+                    try
+                    {
+                        //JobID = (string)reader1["JobID"];
+                        JobID = (int)reader1["JobID"];
+                        Console.WriteLine("JobID      : " + JobID);
+                        //                        Console.WriteLine("");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Get JobID Failed" + "\n");
+                        continue;
+                    }
 
                     LCID = LCID.Trim();
-                    if (LCID.Length  != 0)
+                    if (LCID.Length != 0)
                     {
-                        if (1 == GetTitleAndComponent(LCID, out IssueTitle, out IssueComponent, out IssueDescription,out IssueServiceProduct,out IssueProductVersion))
+                        if (1 == GetTitleAndComponent(LCID, out IssueTitle, out IssueComponent, out IssueDescription, out IssueServiceProduct, out IssueProductVersion))
                         {
-                            SimilarLCs = GetSimilarCaseFromElasticSearchInternal(LCID, IssueTitle, IssueComponent,IssueDescription,IssueServiceProduct,IssueProductVersion);
-                            
+
+                            SimilarLCs = GetSimilarCaseFromElasticSearchInternal(LCID, IssueTitle, IssueComponent, IssueDescription, IssueServiceProduct, IssueProductVersion);
+
                         }
+                    }
+                    else
+                    {
+                        GetDescriptionFromJob(JobID, out IssueDescription);
+                        SimilarLCs = GetSimilarCaseFromElasticSearchInternal(LCID, IssueTitle, IssueComponent, IssueDescription, IssueServiceProduct, IssueProductVersion);
                     }
                     if (0 != SimilarLCs.Length)
                     {
-                        updatecmd = "update " + CADISSUESTABLENAME + " set similarLCIDs = \'" + SimilarLCs + "\'" + ",IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                        //updatecmd = "update " + CADISSUESTABLENAME + " set similarLCIDs = \'" + SimilarLCs + "\'" + ",IssueProcessed = \'1\'" + " where ID = \'" + ID + "\'";
+                        updatecmd = "update " + CADISSUESTABLENAME + " set similarLCIDs = \'" + SimilarLCs + "\'" + ",IssueProcessed = \'1\'" + " where JobID = \'" + JobID + "\'";
                         SqlCommand updatesqlCmd = new SqlCommand(updatecmd, conn);
                         updatesqlCmd.ExecuteNonQuery();
                         Console.Write("SQL Cmd   : " + updatecmd + "\n");
@@ -465,7 +513,7 @@ namespace DataBaseHelper
 
                     }
                     count++;
-                    if (count > 15)
+                    if (count > 3)
                     {
                         Console.WriteLine("Total = " + count);Console.WriteLine("");Console.WriteLine("");Console.WriteLine("");
                         return;
@@ -480,7 +528,8 @@ namespace DataBaseHelper
         public string GetSimilarCaseFromElasticSearchInternal(string LCID, string IssueTitle, string IssueComponent,string IssueDescription,string IssueServiceProduct,string IssueProductVersion)
         {
         //    string strURL = "http://localhost:8080/cases/search";
-            string strURL = "http://10.150.154.25:8080/cases/search";
+            //string strURL = "http://10.150.154.25:8080/cases/search";
+            string strURL = "http://10.108.13.156:8080/cases/search";
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(strURL);
             request.Method = "POST";
             request.ContentType = "application/json";

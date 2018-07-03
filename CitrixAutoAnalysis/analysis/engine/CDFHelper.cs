@@ -206,7 +206,8 @@ namespace CitrixAutoAnalysis.analysis.engine
 
         public int GetLogIndexByFiltersFromIndex(HashSet<CDFFilter> filters, int index)
         {
-            CheckRange(index);
+            if(!CheckRange(index))
+                return -1;
 
 
             for (int i = index; i < allLog.Count; i++)
@@ -263,12 +264,15 @@ namespace CitrixAutoAnalysis.analysis.engine
             return log.IndexInResult;
         }
 
-        private void CheckRange(int index)
+        private bool CheckRange(int index)
         {
             if (index < range.Begin || index > range.End)
             {
-                throw new System.ArgumentOutOfRangeException();
+                //throw new System.ArgumentOutOfRangeException();
+                return false;
             }
+
+            return true;
         }
 
         public List<Log> GetErrorAndExpcetionsFromCurrentRange()
@@ -357,6 +361,46 @@ namespace CitrixAutoAnalysis.analysis.engine
                 if (!ptn.SegInCurrent().Any(seg => seg.IndexInParent == 1))
                 {
                     continue;
+                }
+
+                // we did not find the last segment, so the final one we can find is a break point
+                if(!ptn.SegInCurrent().Exists( Segment => Segment.IndexInParent == pattern.SegInCurrent().Count))
+                {
+                    for(int index = pattern.SegInCurrent().Count; index > 0 ; index --)
+                    {
+                        //find the final one
+                        if(ptn.SegInCurrent().Exists( seg => seg.IndexInParent == index))
+                        {
+                            Segment tempSeg =  ptn.SegInCurrent().First(seg => seg.IndexInParent == index) as Segment;
+                            Segment templateSeg = pattern.SegInCurrent().First(seg => seg.IndexInParent == index) as Segment;
+                            //the final one looks good, so created a fake seg for the result
+                            if(tempSeg.LogInCurrent().Count == templateSeg.LogInCurrent().Count)
+                            {
+                                Log templateLog = tempSeg.LogInCurrent().First(l => l.IndexInParent == tempSeg.LogInCurrent().Count);
+                                templateLog.IsBreakPoint = true;
+
+                                Segment templateSeg2 = pattern.SegInCurrent().First(seg => seg.IndexInParent == index+1) as Segment;
+                                Log tempplateLog2 = templateSeg2.ChildNodes[0] as Log;
+                                Segment fakeSeg = new Segment(Guid.NewGuid(), ptn.Graph, templateSeg2.NodeName, tempSeg.IndexInParent + 1);
+                                Log tempLog2 = new Log(Guid.NewGuid(), fakeSeg, tempplateLog2.Module, tempplateLog2.Src, tempplateLog2.Func, tempplateLog2.Line, "MISSED TO LOCATE ( " + tempplateLog2.Text+" )", 0, 0, 0, tempplateLog2.CapturedTime, 1, 1, ptn.LogInCurrent().Count + 1, RelationWithPrevious.Unknown);
+                                tempLog2.IsForDebug = true;
+
+                                foreach(Context c in tempplateLog2.ContextInCurrent())
+                                {
+                                    if (c.ContextType == ContextType.ContextAssertion || c.ContextType == ContextType.ContextFilter)
+                                    {
+                                        tempLog2.Text = tempLog2.Text.Replace(Log.ParamMagic+c.ParamIndex, c.Assertion);
+                                    }
+                                }
+
+                                fakeSeg.AddChildNode(tempLog2);
+
+                                ptn.Graph.AddChildNode(fakeSeg);
+
+                                break;
+                            }
+                        }
+                    }
                 }
 
                 HashSet<string> Keywords = new HashSet<string>();

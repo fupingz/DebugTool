@@ -1,0 +1,37 @@
+VDA Application Launch:
+	LC8659(Job 73)
+	LC9764(Job 111)
+	LC9400 - working / nonworking
+	LC9853(Job 147: 16 Minutes)
+
+Seamless Initialization:
+	LC8659(Job 60)
+	LC9843(Job 150: 21 Minutes, sunny)
+	
+CSE Policy Application:
+	LC9359(Job 115)
+	LC9400 - working
+
+Credential Provider VDA User Authentication:
+	LC9151(Job 47)
+	LC9400 - working
+
+RfWin Client Engine Startup:
+	LC9388(Job 81)
+	LC9853(Job 148: 16.5 Minutes)
+
+RPM Session Creation:
+	LC8659(Job 84)
+	Sunny(Job 102,103)
+	LC9853(Job 149: 16 Minutes)
+
+BrokerAgent Connection Validation Process:
+	LC8659(Job 82)
+
+	
+	LC9843 -- seamless case
+	LC9388 -- receivr
+	\\10.158.128.200\lcm\Scrum\Core ICA\Techfair\Client_Connection\LC9388
+	
+	LC9853 - zhifu's case
+	\\10.150.154.25\RawTraceDir\Job_137

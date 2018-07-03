@@ -54,7 +54,7 @@ namespace CitrixAutoAnalysis.analysis.engine
             {
                 bool OnlyOneNode = node.IndexInParent > 1 && graphs.Count == 1 && allNodes.ToList().FindAll(seg => seg.IndexInParent == node.IndexInParent).ToList().Count == 1;
 
-                if(OnlyOneNode || node.BelongsTo((Graph) g))
+                if(/*OnlyOneNode ||*/ node.BelongsTo((Graph) g))
                 {
                     target = g;
                     break;

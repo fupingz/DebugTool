@@ -65,7 +65,9 @@ namespace CitrixAutoAnalysis
         /// </summary>
         protected override void OnStop()
         {
+            System.Diagnostics.Trace.WriteLine("Service is stopping");
             Program.Stop();
+            System.Diagnostics.Trace.WriteLine("Base Service is Stopping");
             base.OnStop();
         }
 

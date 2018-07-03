@@ -37,7 +37,7 @@ namespace CitrixAutoAnalysis.pattern
 
         private bool isUsed = false;
 
-        private static string ParamMagic = @"*#_PARAM_INDEX_";
+        public static string ParamMagic = @"*#_PARAM_INDEX_";
 
 
         public Log(Guid id, Segment prnt, string Module, string Src, string Func, int Line, string Text, int SessionId, int ProcessId, int ThreadId, DateTime CapturedTime, int indexInParent, int indexInTrace, int indexInResult, RelationWithPrevious Rwp)

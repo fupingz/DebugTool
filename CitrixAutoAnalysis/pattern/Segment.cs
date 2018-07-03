@@ -99,7 +99,8 @@ namespace CitrixAutoAnalysis.pattern
                             ((Log)cg.Parent).IsBreakPoint = true;
                         }
                         else if(!cs.ContextValue.Equals(cg.ContextValue)){
-                            return false;
+                            if (!cs.NodeName.Equals("UserName"))//for now ignoring this. I have to leave it to future because we have an important demo tomorrow
+                                return false;
                         }
                     }
                 }
